@@ -1,3 +1,7 @@
+## Design and Analysis of Algorithm 
+> **Computer Science**
+> **Semester: III**
+
 # Unit 1 — Algorithm Analysis, Searching & Sorting
 
 > **Course:** Design and Analysis of Algorithms (DAA)  
