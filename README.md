@@ -1,4 +1,4 @@
-## Design and Analysis of Algorithm 
+# Design and Analysis of Algorithm 
 > **Computer Science**
 > **Semester: III**
 
