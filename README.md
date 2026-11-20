@@ -45,23 +45,23 @@ Asymptotic notation describes how an algorithm's resource requirements grow as t
 
 | Notation | Meaning | Interpretation |
 |---|---|---|
-| Big-O | \(O(g(n))\) | Asymptotic upper bound |
-| Big-Omega | \(\Omega(g(n))\) | Asymptotic lower bound |
-| Big-Theta | \(\Theta(g(n))\) | Tight asymptotic bound |
-| Little-o | \(o(g(n))\) | Strict asymptotic upper bound |
-| Little-omega | \(\omega(g(n))\) | Strict asymptotic lower bound |
+| Big-O | $O(g(n))$ | Asymptotic upper bound |
+| Big-Omega | $\Omega(g(n))$ | Asymptotic lower bound |
+| Big-Theta | $\Theta(g(n))$ | Tight asymptotic bound |
+| Little-o | $o(g(n))$ | Strict asymptotic upper bound |
+| Little-omega | $\omega(g(n))$ | Strict asymptotic lower bound |
 
 ### Common Growth Rates
 
 Ordered approximately from slowest to fastest growth:
 
-\[
+$$
 O(1) < O(\log n) < O(n) < O(n\log n)
-\]
+$$
 
-\[
+$$
 < O(n^2) < O(n^3) < O(2^n) < O(n!)
-\]
+$$
 
 ---
 
@@ -239,7 +239,7 @@ SELECTION-SORT(A, n)
 **Properties:**
 - Standard implementation is not stable.
 - In-place sorting algorithm.
-- Performs at most \(n-1\) swaps.
+- Performs at most $\(n-1\)$ swaps.
 - Not adaptive to nearly sorted data.
 
 ## 4.3 Bubble Sort
@@ -296,9 +296,9 @@ For an array representation using 0-based indexing:
 
 | Relationship | Index |
 |---|---|
-| Parent | \(\lfloor(i-1)/2\rfloor\) |
-| Left Child | \(2i+1\) |
-| Right Child | \(2i+2\) |
+| Parent | $\lfloor(i-1)/2\rfloor$ |
+| Left Child | $\2i+1\$ |
+| Right Child | $\(2i+2\$ |
 
 ### Heap Operations
 
@@ -339,9 +339,9 @@ HEAPSORT(A, n)
 
 Comparison-based sorting algorithms have a worst-case lower bound of:
 
-\[
+$$
 \Omega(n\log n)
-\]
+$$
 
 However, algorithms that exploit properties of the input can achieve linear-time sorting under suitable assumptions.
 
@@ -357,13 +357,13 @@ Counting Sort sorts elements by counting the frequency of each distinct key.
 
 **Complexity:**
 
-\[
+$$
 T(n,k)=O(n+k)
-\]
+$$
 
 Where:
-- \(n\) = Number of elements.
-- \(k\) = Range of possible keys.
+- $\(n$ = Number of elements.
+- $\(k$ = Range of possible keys.
 
 **Properties:**
 - Non-comparison-based sorting.
@@ -379,13 +379,13 @@ It uses a stable sorting algorithm, commonly Counting Sort, at each digit positi
 
 **Complexity:**
 
-\[
+$$
 T(n)=O(d(n+k))
-\]
+$$
 
 Where:
-- \(d\) = Number of digit positions.
-- \(k\) = Range of each digit.
+- $\d\)$ = Number of digit positions.
+- $(k\)$ = Range of each digit.
 
 ### 6.3 Bucket Sort
 
@@ -393,9 +393,9 @@ Bucket Sort distributes elements into multiple buckets, sorts individual buckets
 
 **Expected Complexity:**
 
-\[
+$$
 O(n)
-\]
+$$
 
 Under suitable distribution assumptions.
 
@@ -439,52 +439,52 @@ DIVIDE-AND-CONQUER(problem)
 
 A common recurrence for divide-and-conquer algorithms is:
 
-\[
+$$
 T(n)=aT(n/b)+f(n)
-\]
+$$
 
 Where:
-- \(a\) = Number of subproblems.
-- \(n/b\) = Size of each subproblem.
-- \(f(n)\) = Division and combination cost.
+- $\(a\$ = Number of subproblems.
+- $\(n/b\$ = Size of each subproblem.
+- $\(f(n)\$ = Division and combination cost.
 
 ### Master Theorem
 
 For:
 
-\[
+$$
 T(n)=aT(n/b)+f(n)
-\]
+$$
 
 Let:
 
-\[
+$$
 c=\log_b a
-\]
+$$
 
 **Case 1:**
 
-If \(f(n)=O(n^{c-\epsilon})\), then:
+If $\(f(n)=O(n^{c-\epsilon})\)$, then:
 
-\[
+$$
 T(n)=\Theta(n^c)
-\]
+$$
 
 **Case 2:**
 
-If \(f(n)=\Theta(n^c\log^k n)\), then:
+If $\(f(n)=\Theta(n^c\log^k n)\)$, then:
 
-\[
+$$
 T(n)=\Theta(n^c\log^{k+1}n)
-\]
+$$
 
 **Case 3:**
 
-If \(f(n)=\Omega(n^{c+\epsilon})\), and the regularity condition holds, then:
+If $\(f(n)=\Omega(n^{c+\epsilon})\)$, and the regularity condition holds, then:
 
-\[
+$$
 T(n)=\Theta(f(n))
-\]
+$$
 
 ---
 
@@ -513,15 +513,15 @@ MERGE-SORT(A, low, high)
 
 ### Recurrence Relation
 
-\[
+$$
 T(n)=2T(n/2)+O(n)
-\]
+$$
 
 Using the Master Theorem:
 
-\[
+$$
 \boxed{T(n)=\Theta(n\log n)}
-\]
+$$
 
 ### Complexity Analysis
 
@@ -621,21 +621,21 @@ The Maximum Subarray Problem asks us to find a contiguous subarray with the maxi
 
 Given an array:
 
-\[
+$$
 A=[-2,1,-3,4,-1,2,1,-5,4]
-\]
+$$
 
 The maximum-sum contiguous subarray is:
 
-\[
+$$
 [4,-1,2,1]
-\]
+$$
 
 Its sum is:
 
-\[
+$$
 4-1+2+1=6
-\]
+$$
 
 ### Divide-and-Conquer Approach
 
@@ -647,39 +647,39 @@ The maximum subarray must belong to one of three categories:
 
 Therefore:
 
-\[
+$$
 MAXIMUM-SUBARRAY =
 \max(L,R,C)
-\]
+$$
 
 Where:
-- \(L\) = Maximum subarray sum in the left half.
-- \(R\) = Maximum subarray sum in the right half.
-- \(C\) = Maximum crossing subarray sum.
+- $\(L\)$ = Maximum subarray sum in the left half.
+- $\(R\)$ = Maximum subarray sum in the right half.
+- $\(C\)$ = Maximum crossing subarray sum.
 
 ### Recurrence Relation
 
-\[
+$$
 T(n)=2T(n/2)+O(n)
-\]
+$$
 
 Therefore:
 
-\[
+$$
 \boxed{T(n)=O(n\log n)}
-\]
+$$
 
 ### Kadane's Algorithm
 
 An alternative linear-time approach maintains the best subarray ending at the current position.
 
-\[
+$$
 currentMax_i=\max(A_i,currentMax_{i-1}+A_i)
-\]
+$$
 
-\[
+$$
 globalMax_i=\max(globalMax_{i-1},currentMax_i)
-\]
+$$
 
 **Complexity:**
 
@@ -699,85 +699,85 @@ Strassen's Algorithm is a divide-and-conquer algorithm that multiplies two matri
 
 ### Conventional Matrix Multiplication
 
-For two \(n \times n\) matrices:
+For two $$\(n \times n\)$$ matrices:
 
-\[
+$$
 T(n)=8T(n/2)+O(n^2)
-\]
+$$
 
 Therefore:
 
-\[
+$$
 T(n)=O(n^3)
-\]
+$$
 
 ### Strassen's Approach
 
 Divide matrices \(A\) and \(B\) into four submatrices:
 
-\[
+$$
 A=
 \begin{bmatrix}
 A_{11}&A_{12}\\
 A_{21}&A_{22}
 \end{bmatrix}
-\]
+$$
 
-\[
+$$
 B=
 \begin{bmatrix}
 B_{11}&B_{12}\\
 B_{21}&B_{22}
 \end{bmatrix}
-\]
+$$
 
 Compute seven products:
 
-\[
+$$
 M_1=(A_{11}+A_{22})(B_{11}+B_{22})
-\]
+$$
 
-\[
+$$
 M_2=(A_{21}+A_{22})B_{11}
-\]
+$$
 
-\[
+$$
 M_3=A_{11}(B_{12}-B_{22})
-\]
+$$
 
-\[
+$$
 M_4=A_{22}(B_{21}-B_{11})
-\]
+$$
 
-\[
+$$
 M_5=(A_{11}+A_{12})B_{22}
-\]
+$$
 
-\[
+$$
 M_6=(A_{21}-A_{11})(B_{11}+B_{12})
-\]
+$$
 
-\[
+$$
 M_7=(A_{12}-A_{22})(B_{21}+B_{22})
-\]
+$$
 
 ### Construct the Result
 
-\[
+$$
 C_{11}=M_1+M_4-M_5+M_7
-\]
+$$
 
-\[
+$$
 C_{12}=M_3+M_5
-\]
+$$
 
-\[
+$$
 C_{21}=M_2+M_4
-\]
+$$
 
-\[
+$$
 C_{22}=M_1-M_2+M_3+M_6
-\]
+$$
 
 ### Complexity Analysis
 
