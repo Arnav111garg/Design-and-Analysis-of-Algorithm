@@ -3307,3 +3307,1193 @@ $$
 **End of Unit 3 — Dynamic Programming**
 
 *These notes serve as a reference for Dynamic Programming fundamentals, optimization problems, recurrence formulation, correctness arguments, and complexity analysis.*
+
+
+# Unit 4 — Hash Tables, Hash Functions & Collision Resolution
+
+> **Course:** Design and Analysis of Algorithms (DAA)  
+> **Unit:** 04  
+> **Topics:** Hash Tables, Hash Functions, Collision Resolution Schemes and Complexity Analysis.
+
+---
+
+## Table of Contents
+
+1. [Introduction to Hash Tables](#1-introduction-to-hash-tables)
+2. [Hash Functions](#2-hash-functions)
+3. [Properties of a Good Hash Function](#3-properties-of-a-good-hash-function)
+4. [Collision in Hashing](#4-collision-in-hashing)
+5. [Collision Resolution Schemes](#5-collision-resolution-schemes)
+   - Separate Chaining
+   - Open Addressing
+   - Linear Probing
+   - Quadratic Probing
+   - Double Hashing
+6. [Load Factor and Rehashing](#6-load-factor-and-rehashing)
+7. [Analysis of Time and Space Complexity](#7-analysis-of-time-and-space-complexity)
+8. [Comparison of Collision Resolution Techniques](#8-comparison-of-collision-resolution-techniques)
+9. [Applications of Hash Tables](#9-applications-of-hash-tables)
+10. [Key Takeaways](#10-key-takeaways)
+
+---
+
+# 1. Introduction to Hash Tables
+
+A **Hash Table** is a data structure that stores key-value pairs and supports efficient insertion, searching, and deletion using a hash function.
+
+Instead of searching through every element, a hash table calculates an index directly from a key and uses that index to access the corresponding location in an array.
+
+This technique is called **Hashing**.
+
+### 1.1 Basic Terminology
+
+- **Key:** An identifier used to access a stored element.
+- **Value:** The data associated with a key.
+- **Hash Function:** A function that converts a key into an array index.
+- **Hash Table:** An array-based data structure used to store key-value pairs.
+- **Collision:** An event in which two different keys are mapped to the same index.
+- **Bucket:** A location in the hash table that stores one or more elements.
+
+### 1.2 Mathematical Representation
+
+A hash function maps a key from a key space $U$ to an index in a hash table of size $m$.
+
+$$
+h: U \rightarrow \{0,1,2,\ldots,m-1\}
+$$
+
+Where:
+
+- $U$ = Universe of possible keys.
+- $m$ = Size of the hash table.
+- $h(k)$ = Index generated for key $k$.
+
+For example, consider a hash table of size:
+
+$$
+m=10
+$$
+
+And the hash function:
+
+$$
+h(k)=k\bmod 10
+$$
+
+For the key $42$:
+
+$$
+h(42)=42\bmod 10=2
+$$
+
+Therefore, key $42$ is stored at index $2$.
+
+### 1.3 Basic Operations
+
+| Operation | Description |
+|---|---|
+| Insert(key, value) | Stores a key-value pair. |
+| Search(key) | Retrieves the value associated with a key. |
+| Delete(key) | Removes a key-value pair. |
+| Update(key, value) | Modifies the value associated with a key. |
+
+### 1.4 Advantages of Hash Tables
+
+- Average-case constant-time insertion, searching, and deletion under suitable assumptions.
+- Efficient key-value storage and retrieval.
+- No requirement for elements to be stored in sorted order.
+- Particularly effective for large datasets when the hash function distributes keys well.
+
+### 1.5 Limitations
+
+- Collisions cannot generally be avoided.
+- Performance depends on the quality of the hash function.
+- Worst-case operations can take linear time.
+- Hash tables do not naturally maintain sorted order.
+- Additional memory may be required for collision resolution and resizing.
+
+---
+
+# 2. Hash Functions
+
+A **Hash Function** is a mathematical function that transforms a key into an integer index corresponding to a location in a hash table.
+
+For a table of size $m$:
+
+$$
+h(k)\in[0,m-1]
+$$
+
+The main objective of a hash function is to distribute keys uniformly across the available table positions.
+
+## 2.1 Division Method
+
+The division method calculates the remainder when a key is divided by the table size.
+
+$$
+\boxed{h(k)=k\bmod m}
+$$
+
+Where:
+
+- $k$ = Input key.
+- $m$ = Hash table size.
+
+**Example:**
+
+Let:
+
+$$
+k=1234,\quad m=11
+$$
+
+Then:
+
+$$
+h(1234)=1234\bmod 11
+$$
+
+$$
+\boxed{h(1234)=2}
+$$
+
+**Important Observations:**
+
+- Simple and computationally efficient.
+- Choosing a prime table size is often a useful heuristic.
+- The table size should avoid introducing undesirable patterns in the key distribution.
+- The choice of $m$ can significantly influence collision frequency.
+
+## 2.2 Multiplication Method
+
+The multiplication method multiplies the key by a constant and uses the fractional part of the result to determine the index.
+
+The hash function is:
+
+$$
+\boxed{
+h(k)=\left\lfloor m\cdot\{kA\}\right\rfloor
+}
+$$
+
+Where:
+
+- $m$ = Table size.
+- $A$ = Constant such that $0<A<1$.
+- $\{kA\}$ = Fractional part of $kA$.
+- $\lfloor x\rfloor$ = Greatest integer less than or equal to $x$.
+
+The fractional part is defined as:
+
+$$
+\{x\}=x-\lfloor x\rfloor
+$$
+
+**Example:**
+
+Suppose:
+
+$$
+k=1234,\quad m=16,\quad A\approx0.618
+$$
+
+Then:
+
+$$
+kA=1234(0.618)=762.612
+$$
+
+Fractional part:
+
+$$
+\{kA\}=0.612
+$$
+
+Therefore:
+
+$$
+h(k)=\lfloor16(0.612)\rfloor
+$$
+
+$$
+\boxed{h(k)=9}
+$$
+
+## 2.3 Mid-Square Method
+
+In the Mid-Square Method, the key is squared and selected middle digits or bits are extracted to determine the hash index.
+
+### Procedure
+
+1. Square the given key.
+2. Extract the middle digits or bits.
+3. Convert the extracted value into a valid table index, if necessary.
+
+**Example:**
+
+Suppose:
+
+$$
+k=44
+$$
+
+Squaring:
+
+$$
+44^2=1936
+$$
+
+Selecting the middle two digits:
+
+$$
+h(k)=93
+$$
+
+For a table of size $m=100$:
+
+$$
+h(k)=93\bmod100=93
+$$
+
+**Properties:**
+
+- Uses information from different parts of the key.
+- Can provide useful distribution for suitable key patterns.
+- The choice of extracted digits or bits matters.
+
+## 2.4 Folding Method
+
+The Folding Method divides a key into smaller groups of digits or bits and combines those groups to generate a hash value.
+
+### Procedure
+
+1. Divide the key into equal-sized groups.
+2. Add the groups together.
+3. Apply modulo table size to obtain a valid index.
+
+**Example:**
+
+Consider:
+
+$$
+k=123456789
+$$
+
+Divide into groups:
+
+$$
+12,\quad34,\quad56,\quad78,\quad9
+$$
+
+Add the groups:
+
+$$
+12+34+56+78+9=189
+$$
+
+For a table size of $m=100$:
+
+$$
+h(k)=189\bmod100
+$$
+
+$$
+\boxed{h(k)=89}
+$$
+
+## 2.5 Polynomial Hashing for Strings
+
+String hashing converts a sequence of characters into a numerical hash value.
+
+A common polynomial hashing formula is:
+
+$$
+\boxed{
+h(s)=\left(\sum_{i=0}^{L-1}c_i p^i\right)\bmod m
+}
+$$
+
+Where:
+
+- $L$ = Length of the string.
+- $c_i$ = Numerical representation of character $i$.
+- $p$ = Chosen multiplier or base.
+- $m$ = Modulus.
+
+For example, character codes can be used to represent individual characters.
+
+This method is commonly used in string-processing algorithms.
+
+**Important:** The quality of a string hash depends on the chosen base, modulus, and input distribution. Modular arithmetic and appropriate integer types are important when implementing it.
+
+---
+
+# 3. Properties of a Good Hash Function
+
+A good hash function should satisfy several desirable properties.
+
+### 3.1 Deterministic
+
+The same key must always produce the same hash value under the same hashing configuration.
+
+$$
+h(k)=h(k)
+$$
+
+### 3.2 Uniform Distribution
+
+Keys should be distributed approximately uniformly throughout the hash table.
+
+A uniform distribution reduces the probability of collisions and long search sequences.
+
+### 3.3 Efficiency
+
+The hash function should be computationally inexpensive.
+
+A complicated hash function can increase the overall cost of insertion and searching.
+
+### 3.4 Good Mixing
+
+The hash function should use information from the entire key rather than relying excessively on a small portion of it.
+
+### 3.5 Consistency with Equality
+
+If two keys are considered equal, they must produce the same hash value.
+
+$$
+k_1=k_2\implies h(k_1)=h(k_2)
+$$
+
+However, the reverse is not necessarily true.
+
+$$
+h(k_1)=h(k_2)\centernot\implies k_1=k_2
+$$
+
+Different keys may produce the same hash value, resulting in a collision.
+
+### 3.6 Universal Hashing
+
+Universal Hashing uses a randomly selected hash function from a family of hash functions.
+
+A family $H$ is universal if, for any two distinct keys $x$ and $y$:
+
+$$
+\Pr_{h\in H}[h(x)=h(y)]\leq\frac{1}{m}
+$$
+
+Where:
+
+- $H$ = Family of hash functions.
+- $m$ = Number of table positions.
+- Probability is taken over the random selection of a hash function.
+
+Universal hashing reduces the possibility that a fixed set of keys consistently produces excessive collisions.
+
+---
+
+# 4. Collision in Hashing
+
+A **Collision** occurs when two or more distinct keys generate the same hash-table index.
+
+Mathematically:
+
+$$
+k_1\neq k_2
+$$
+
+But:
+
+$$
+h(k_1)=h(k_2)
+$$
+
+### Example
+
+Consider the hash function:
+
+$$
+h(k)=k\bmod 10
+$$
+
+For keys:
+
+$$
+k_1=25,\quad k_2=45,\quad k_3=65
+$$
+
+We get:
+
+$$
+h(25)=5
+$$
+
+$$
+h(45)=5
+$$
+
+$$
+h(65)=5
+$$
+
+All three keys map to index $5$.
+
+Therefore, a collision occurs.
+
+### Why Do Collisions Occur?
+
+If the universe of possible keys is larger than the number of available table positions, multiple keys must map to the same index.
+
+This follows from the Pigeonhole Principle.
+
+If:
+
+$$
+|U|>m
+$$
+
+Then at least two distinct keys must have the same hash-table index.
+
+### Collision Resolution
+
+Collision resolution refers to the techniques used to store and retrieve elements when multiple keys map to the same hash-table position.
+
+The two major approaches are:
+
+1. Separate Chaining.
+2. Open Addressing.
+
+---
+
+# 5. Collision Resolution Schemes
+
+## 5.1 Separate Chaining
+
+Separate Chaining resolves collisions by maintaining a collection of elements at each hash-table index.
+
+Each table position points to a linked list or another suitable data structure containing all keys mapped to that index.
+
+### Working
+
+1. Calculate the hash index.
+2. Access the corresponding bucket.
+3. If the bucket is empty, insert the new element.
+4. If the bucket already contains elements, add the new element to that bucket.
+
+### Example
+
+Consider:
+
+$$
+h(k)=k\bmod 10
+$$
+
+Insert:
+
+$$
+12,\quad22,\quad32,\quad15,\quad25
+$$
+
+The resulting hash table is:
+
+| Index | Stored Elements |
+|---|---|
+| 0 | Empty |
+| 1 | Empty |
+| 2 | 12 → 22 → 32 |
+| 3 | Empty |
+| 4 | Empty |
+| 5 | 15 → 25 |
+| 6 | Empty |
+| 7 | Empty |
+| 8 | Empty |
+| 9 | Empty |
+
+All keys that produce the same index are stored in the same bucket.
+
+### Pseudocode
+
+**Insertion:**
+
+```text
+CHAINED-INSERT(T, key, value)
+    index = h(key)
+
+    for each element in T[index]
+        if element.key == key
+            update element.value
+            return
+
+    insert (key, value) at the head of T[index]
+```
+
+**Searching:**
+
+```text
+CHAINED-SEARCH(T, key)
+    index = h(key)
+
+    for each element in T[index]
+        if element.key == key
+            return element.value
+
+    return NOT-FOUND
+```
+
+**Deletion:**
+
+```text
+CHAINED-DELETE(T, key)
+    index = h(key)
+
+    for each element in T[index]
+        if element.key == key
+            remove element
+            return SUCCESS
+
+    return NOT-FOUND
+```
+
+### Complexity Analysis
+
+Let:
+
+$$
+\alpha=\frac{n}{m}
+$$
+
+Where:
+
+- $n$ = Number of stored keys.
+- $m$ = Number of buckets.
+- $\alpha$ = Load factor.
+
+Under the simple uniform hashing assumption, the expected bucket length is $\alpha$.
+
+| Operation | Expected Time | Worst-Case Time |
+|---|---|---|
+| Insertion | O(1)* | O(n) |
+| Searching | O(1 + α) | O(n) |
+| Deletion | O(1 + α) | O(n) |
+
+*Insertion at the head of a bucket is O(1) once the bucket is known, assuming duplicate-key checking is not required or has already been handled.*
+
+**Properties:**
+
+- Multiple elements can occupy the same bucket.
+- Load factor can be greater than 1.
+- Deletion is straightforward.
+- Additional memory is required for bucket structures.
+- Performance depends on the distribution of keys.
+
+## 5.2 Open Addressing
+
+Open Addressing resolves collisions by storing all elements directly inside the hash table.
+
+When a collision occurs, the algorithm searches for another available position using a predefined probing sequence.
+
+Unlike Separate Chaining, every key must occupy one of the available table positions.
+
+The general probing function is:
+
+$$
+\boxed{h(k,i)}
+$$
+
+Where:
+
+- $k$ = Key.
+- $i$ = Probe number.
+- $h(k,i)$ = Position examined during the $i$-th probe.
+
+Open addressing requires:
+
+$$
+\alpha=\frac{n}{m}<1
+$$
+
+The table must always have at least one unused position for insertion to succeed.
+
+The major open-addressing techniques are:
+
+1. Linear Probing.
+2. Quadratic Probing.
+3. Double Hashing.
+
+---
+
+## 5.3 Linear Probing
+
+Linear Probing resolves collisions by checking consecutive positions until an empty slot is found.
+
+The probing function is:
+
+$$
+\boxed{
+h(k,i)=(h'(k)+i)\bmod m
+}
+$$
+
+Where:
+
+- $h'(k)$ = Original hash function.
+- $i=0,1,2,\ldots,m-1$ = Probe number.
+
+### Working
+
+1. Calculate the original hash index.
+2. If the position is empty, insert the key.
+3. If occupied, check the next position.
+4. Continue until an empty position is found.
+
+### Example
+
+Consider:
+
+$$
+h'(k)=k\bmod 10
+$$
+
+Insert:
+
+$$
+23,\quad43,\quad13,\quad33
+$$
+
+All keys initially map to index $3$.
+
+| Key | Initial Index | Final Position |
+|---|---:|---:|
+| 23 | 3 | 3 |
+| 43 | 3 | 4 |
+| 13 | 3 | 5 |
+| 33 | 3 | 6 |
+
+The resulting table:
+
+| Index | Key |
+|---|---|
+| 0 | Empty |
+| 1 | Empty |
+| 2 | Empty |
+| 3 | 23 |
+| 4 | 43 |
+| 5 | 13 |
+| 6 | 33 |
+| 7 | Empty |
+| 8 | Empty |
+| 9 | Empty |
+
+### Primary Clustering
+
+Linear Probing suffers from **Primary Clustering**.
+
+Primary clustering occurs when consecutive occupied positions form long blocks, increasing the number of probes required for future insertions and searches.
+
+### Advantages
+
+- Simple implementation.
+- Good cache locality.
+- No additional linked-list storage.
+- Efficient at low load factors.
+
+### Disadvantages
+
+- Suffers from primary clustering.
+- Performance deteriorates as the table becomes full.
+- Deletion requires special handling.
+
+---
+
+## 5.4 Quadratic Probing
+
+Quadratic Probing resolves collisions by using a quadratic function to calculate the next position.
+
+The general probing function is:
+
+$$
+\boxed{
+h(k,i)=(h'(k)+c_1i+c_2i^2)\bmod m
+}
+$$
+
+Where:
+
+- $h'(k)$ = Original hash function.
+- $c_1,c_2$ = Constants.
+- $i$ = Probe number.
+
+A common simplified form is:
+
+$$
+h(k,i)=(h'(k)+i^2)\bmod m
+$$
+
+### Working
+
+1. Calculate the original hash index.
+2. If occupied, probe using a quadratic offset.
+3. Continue checking subsequent quadratic probe positions.
+4. Stop when an available position is found.
+
+### Example
+
+Consider:
+
+$$
+h'(k)=k\bmod 11
+$$
+
+And:
+
+$$
+h(k,i)=(h'(k)+i^2)\bmod 11
+$$
+
+Insert keys:
+
+$$
+22,\quad33,\quad44
+$$
+
+All three keys initially map to index:
+
+$$
+h'(k)=0
+$$
+
+For the first key:
+
+$$
+h(22,0)=0
+$$
+
+For the second key, index 0 is occupied:
+
+$$
+h(33,1)=(0+1^2)\bmod11=1
+$$
+
+For the third key, indices 0 and 1 are occupied:
+
+$$
+h(44,1)=1
+$$
+
+$$
+h(44,2)=(0+2^2)\bmod11=4
+$$
+
+Therefore, the final positions are:
+
+| Key | Final Position |
+|---|---:|
+| 22 | 0 |
+| 33 | 1 |
+| 44 | 4 |
+
+### Secondary Clustering
+
+Quadratic Probing reduces primary clustering, but keys with the same initial hash position follow the same probing sequence.
+
+This phenomenon is known as **Secondary Clustering**.
+
+### Advantages
+
+- Reduces primary clustering.
+- Does not require additional linked-list storage.
+- Often performs better than linear probing under moderate load factors.
+
+### Disadvantages
+
+- Can still suffer from secondary clustering.
+- Certain table sizes and constants may prevent some slots from being reached.
+- Requires careful selection of parameters to guarantee sufficient probe coverage.
+
+---
+
+## 5.5 Double Hashing
+
+Double Hashing uses two different hash functions to determine the probing sequence.
+
+The probing function is:
+
+$$
+\boxed{
+h(k,i)=(h_1(k)+i\cdot h_2(k))\bmod m
+}
+$$
+
+Where:
+
+- $h_1(k)$ = Primary hash function.
+- $h_2(k)$ = Secondary hash function.
+- $i$ = Probe number.
+
+The second hash function determines the step size between probes.
+
+### Working
+
+1. Calculate the initial position using $h_1(k)$.
+2. If the position is occupied, calculate the step size using $h_2(k)$.
+3. Use the second hash value to determine the next position.
+4. Continue until an empty position is found.
+
+### Example
+
+Let:
+
+$$
+m=11
+$$
+
+Choose:
+
+$$
+h_1(k)=k\bmod11
+$$
+
+$$
+h_2(k)=1+(k\bmod10)
+$$
+
+The probing function becomes:
+
+$$
+h(k,i)=(h_1(k)+i\cdot h_2(k))\bmod11
+$$
+
+For key:
+
+$$
+k=22
+$$
+
+Initial position:
+
+$$
+h_1(22)=0
+$$
+
+Step size:
+
+$$
+h_2(22)=1+2=3
+$$
+
+Probe sequence:
+
+$$
+0,\quad3,\quad6,\quad9,\ldots
+$$
+
+If index 0 is occupied, the algorithm checks index 3, then index 6, and so on.
+
+### Important Condition
+
+For a key's probe sequence to visit every table position, the step size and table size must be relatively prime.
+
+$$
+\boxed{\gcd(h_2(k),m)=1}
+$$
+
+Choosing a prime table size and a secondary hash function that produces values between $1$ and $m-1$ satisfies this condition.
+
+### Advantages
+
+- Reduces primary and secondary clustering.
+- Provides more varied probe sequences.
+- Often achieves better distribution than linear and quadratic probing.
+
+### Disadvantages
+
+- More computationally expensive than linear probing.
+- Requires two well-designed hash functions.
+- Proper selection of the secondary hash function is essential.
+
+---
+
+# 6. Load Factor and Rehashing
+
+## 6.1 Load Factor
+
+The **Load Factor** measures how full a hash table is.
+
+It is defined as:
+
+$$
+\boxed{
+\alpha=\frac{n}{m}
+}
+$$
+
+Where:
+
+- $n$ = Number of stored elements.
+- $m$ = Number of table positions.
+
+### Example
+
+Suppose a hash table has:
+
+$$
+n=75,\quad m=100
+$$
+
+Then:
+
+$$
+\alpha=\frac{75}{100}
+$$
+
+$$
+\boxed{\alpha=0.75}
+$$
+
+### Importance of Load Factor
+
+The load factor directly influences the performance of hash-table operations.
+
+- Low load factor generally reduces collisions.
+- High load factor generally increases collisions.
+- In open addressing, performance can deteriorate significantly as the table approaches full capacity.
+- In separate chaining, the load factor represents the expected number of stored elements per bucket under uniform distribution.
+
+## 6.2 Rehashing
+
+Rehashing is the process of creating a new hash table, usually with a larger capacity, and inserting all existing elements into the new table using the new table configuration.
+
+### When Is Rehashing Required?
+
+Rehashing is commonly performed when the load factor exceeds a predefined threshold.
+
+For example:
+
+$$
+\alpha>0.75
+$$
+
+The threshold is implementation-dependent.
+
+### Rehashing Procedure
+
+1. Create a new hash table with a larger capacity.
+2. Retrieve all existing key-value pairs.
+3. Recalculate the hash index of each key using the new capacity.
+4. Insert each element into the new table.
+5. Replace the old table with the new table.
+
+**Important:** Existing entries must be rehashed because changing the table size can change their hash indices.
+
+### Complexity
+
+If $n$ elements are reinserted:
+
+$$
+T(n)=O(n)
+$$
+
+A single rehashing operation is linear in the number of stored elements.
+
+However, with geometric growth, such as doubling the capacity, insertion can have amortized constant time:
+
+$$
+\boxed{O(1)\text{ amortized}}
+$$
+
+---
+
+# 7. Analysis of Time and Space Complexity
+
+The performance of hash tables depends on:
+
+- The hash function.
+- The collision-resolution scheme.
+- The load factor.
+- The distribution of input keys.
+- The probing or bucket-search process.
+
+## 7.1 Separate Chaining Complexity
+
+Under simple uniform hashing, the expected number of elements in a bucket is:
+
+$$
+\alpha=\frac{n}{m}
+$$
+
+Therefore, searching requires expected time proportional to:
+
+$$
+O(1+\alpha)
+$$
+
+| Operation | Best Case | Expected Case | Worst Case |
+|---|---|---|---|
+| Insertion | O(1) | O(1)* | O(n) |
+| Searching | O(1) | O(1 + α) | O(n) |
+| Deletion | O(1) | O(1 + α) | O(n) |
+
+*Assumes insertion at the head of a bucket and does not include an optional duplicate-key search.*
+
+Space Complexity:
+
+$$
+O(m+n)
+$$
+
+## 7.2 Open Addressing Complexity
+
+For open addressing, operations involve examining a sequence of table positions.
+
+Under suitable hashing assumptions and with a controlled load factor, expected operation time is approximately constant.
+
+However, as the load factor approaches 1, the expected number of probes increases.
+
+| Operation | Expected Case (Controlled Load Factor) | Worst Case |
+|---|---|---|
+| Insertion | O(1) | O(n) |
+| Searching | O(1) | O(n) |
+| Deletion | O(1) | O(n) |
+
+Space Complexity:
+
+$$
+O(m)
+$$
+
+### 7.3 Load Factor and Search Performance
+
+For open addressing under the idealized uniform-probing model, expected probe bounds include:
+
+**Unsuccessful Search:**
+
+$$
+E[\text{probes}]\leq\frac{1}{1-\alpha}
+$$
+
+**Successful Search:**
+
+$$
+E[\text{probes}]
+\leq
+\frac{1}{\alpha}
+\ln\left(\frac{1}{1-\alpha}\right)
+$$
+
+These are bounds under the uniform hashing model, not exact performance formulas for every probing scheme.
+
+Linear probing has additional clustering effects.
+
+---
+
+# 8. Comparison of Collision Resolution Techniques
+
+| Feature | Separate Chaining | Linear Probing | Quadratic Probing | Double Hashing |
+|---|---|---|---|---|
+| Technique | Linked lists / buckets | Consecutive probing | Quadratic offsets | Two hash functions |
+| Storage | Outside table buckets or linked structures | Inside table | Inside table | Inside table |
+| Primary Clustering | No | Yes | Reduced | Reduced |
+| Secondary Clustering | No | Yes, through shared buckets | Yes | Reduced |
+| Load Factor | Can exceed 1 | Must be below 1 | Must be below 1 | Must be below 1 |
+| Deletion | Simple | Tombstones or careful deletion | Tombstones or careful deletion | Tombstones or careful deletion |
+| Extra Memory | Bucket overhead | No separate bucket structures | No separate bucket structures | No separate bucket structures |
+| Worst-Case Search | O(n) | O(n) | O(n) | O(n) |
+
+### Summary of Hashing Techniques
+
+| Technique | Main Idea |
+|---|---|
+| Division Method | Remainder of key divided by table size |
+| Multiplication Method | Fractional part of key multiplied by a constant |
+| Mid-Square Method | Extract middle digits or bits of squared key |
+| Folding Method | Divide key into groups and combine them |
+| Polynomial Hashing | Convert characters into a polynomial expression |
+| Separate Chaining | Store colliding elements in the same bucket |
+| Linear Probing | Search consecutive table positions |
+| Quadratic Probing | Search using quadratic offsets |
+| Double Hashing | Use a second hash function for probe intervals |
+
+---
+
+# 9. Applications of Hash Tables
+
+Hash Tables are widely used in computer science because of their efficient average-case lookup performance.
+
+### 9.1 Databases
+
+Hash-based indexing can provide efficient record lookup using selected key attributes.
+
+### 9.2 Caches
+
+Caches use hashing to locate previously stored data quickly.
+
+### 9.3 Compilers
+
+Symbol tables use hashing to store and retrieve identifiers, variables, and associated information.
+
+### 9.4 Programming Languages
+
+Common implementations include:
+
+- C++: `unordered_map`, `unordered_set`
+- Java: `HashMap`, `HashSet`
+- Python: `dict`, `set`
+
+### 9.5 Duplicate Detection
+
+Hash sets can efficiently identify previously encountered elements.
+
+### 9.6 Frequency Counting
+
+Hash maps are commonly used to maintain the frequency of elements in arrays, strings, and datasets.
+
+### 9.7 Distributed Systems
+
+Hashing is used in techniques such as consistent hashing to distribute data across multiple servers.
+
+---
+
+# 10. Key Takeaways
+
+1. A Hash Table stores key-value pairs and provides efficient average-case retrieval.
+2. A Hash Function maps keys to valid table indices.
+3. A good hash function should be deterministic, efficient, and distribute keys uniformly.
+4. Collisions occur when different keys produce the same hash index.
+5. The Division Method uses the remainder operation to calculate hash positions.
+6. The Multiplication Method uses the fractional part of a multiplied key.
+7. Separate Chaining stores colliding elements in the same bucket.
+8. Open Addressing resolves collisions by searching for another empty position in the table.
+9. Linear Probing suffers from primary clustering.
+10. Quadratic Probing reduces primary clustering but can suffer from secondary clustering.
+11. Double Hashing uses two hash functions to generate a more varied probing sequence.
+12. Load Factor measures the number of stored elements relative to table capacity.
+13. Rehashing increases table capacity and redistributes existing keys.
+14. Hash-table operations generally achieve expected O(1) performance under suitable assumptions.
+15. The worst-case time complexity of searching, insertion, and deletion can be O(n).
+
+---
+
+**End of Unit 4 — Hash Tables, Hash Functions & Collision Resolution**
+
+*These notes serve as a quick-reference guide to hashing fundamentals, hash-function construction, collision-resolution techniques, and asymptotic complexity analysis.*
+
+Unit-04/
+│
+├── README.md
+│
+├── Hash-Functions/
+│   ├── DivisionMethod.cpp
+│   ├── MultiplicationMethod.cpp
+│   ├── MidSquareMethod.cpp
+│   └── FoldingMethod.cpp
+│
+├── Collision-Resolution/
+│   ├── SeparateChaining.cpp
+│   ├── LinearProbing.cpp
+│   ├── QuadraticProbing.cpp
+│   └── DoubleHashing.cpp
+│
+└── Applications/
+    ├── FrequencyCounter.cpp
+    ├── DuplicateDetection.cpp
+    └── TwoSum.cpp
