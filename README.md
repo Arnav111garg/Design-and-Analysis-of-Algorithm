@@ -2,14 +2,14 @@
 
 > **Course:** Design and Analysis of Algorithms (DAA)  
 > **Unit:** 01  
-> **Topics:** Searching, Sorting, Algorithm Analysis, Divide and Conquer
+> **Topics:** Algorithm Analysis, Searching, Sorting, Divide and Conquer, Maximum Subarray and Matrix Multiplication.
 
 ---
 
 ## Table of Contents
 
 1. [Introduction to Algorithm Analysis](#1-introduction-to-algorithm-analysis)
-2. [Running Time Analysis and Correctness](#2-running-time-analysis-and-correctness)
+2. [Running Time Analysis and Algorithm Correctness](#2-running-time-analysis-and-algorithm-correctness)
 3. [Searching Algorithms](#3-searching-algorithms)
    - Linear Search
    - Binary Search
@@ -19,7 +19,10 @@
    - Bubble Sort
 5. [Heapsort](#5-heapsort)
 6. [Linear-Time Sorting](#6-linear-time-sorting)
-7. [Divide and Conquer](#7-introduction-to-divide-and-conquer)
+   - Counting Sort
+   - Radix Sort
+   - Bucket Sort
+7. [Introduction to Divide and Conquer](#7-introduction-to-divide-and-conquer)
 8. [Merge Sort](#8-merge-sort)
 9. [Quick Sort](#9-quick-sort)
 10. [Randomized Quick Sort](#10-randomized-quick-sort)
@@ -33,59 +36,129 @@
 
 An **algorithm** is a finite sequence of well-defined instructions designed to solve a computational problem.
 
-Algorithm analysis evaluates the efficiency of an algorithm primarily in terms of:
+Algorithm analysis evaluates the efficiency of an algorithm primarily in terms of its time and space requirements.
 
-- **Time Complexity:** Amount of computational time required as a function of input size.
-- **Space Complexity:** Amount of additional memory required as a function of input size.
-- **Correctness:** Whether the algorithm produces the expected output for every valid input.
+### 1.1 Time Complexity
 
-### Asymptotic Notations
+Time complexity describes how the running time of an algorithm grows with respect to the input size.
 
-Asymptotic notation describes how an algorithm's resource requirements grow as the input size approaches infinity.
+It is represented as a function:
+
+$$
+T(n)
+$$
+
+Where $n$ represents the size of the input.
+
+### 1.2 Space Complexity
+
+Space complexity measures the amount of memory required by an algorithm as a function of input size.
+
+It includes memory used for variables, data structures, recursion stacks, and auxiliary storage.
+
+### 1.3 Asymptotic Notations
+
+Asymptotic notation describes the growth rate of an algorithm as the input size approaches infinity.
 
 | Notation | Meaning | Interpretation |
 |---|---|---|
-| Big-O | $O(g(n))$ | Asymptotic upper bound |
-| Big-Omega | $\Omega(g(n))$ | Asymptotic lower bound |
-| Big-Theta | $\Theta(g(n))$ | Tight asymptotic bound |
-| Little-o | $o(g(n))$ | Strict asymptotic upper bound |
-| Little-omega | $\omega(g(n))$ | Strict asymptotic lower bound |
+| $O(g(n))$ | Big-O | Asymptotic upper bound |
+| $\Omega(g(n))$ | Big-Omega | Asymptotic lower bound |
+| $\Theta(g(n))$ | Big-Theta | Tight asymptotic bound |
+| $o(g(n))$ | Little-o | Strict asymptotic upper bound |
+| $\omega(g(n))$ | Little-omega | Strict asymptotic lower bound |
 
-### Common Growth Rates
+**Big-O:**
+
+$$
+f(n)=O(g(n))
+$$
+
+If there exist positive constants $c$ and $n_0$ such that:
+
+$$
+0\leq f(n)\leq c\cdot g(n)
+$$
+
+For all $n\geq n_0$.
+
+**Big-Omega:**
+
+$$
+f(n)=\Omega(g(n))
+$$
+
+If there exist positive constants $c$ and $n_0$ such that:
+
+$$
+0\leq c\cdot g(n)\leq f(n)
+$$
+
+For all $n\geq n_0$.
+
+**Big-Theta:**
+
+$$
+f(n)=\Theta(g(n))
+$$
+
+If there exist positive constants $c_1,c_2$ and $n_0$ such that:
+
+$$
+0\leq c_1g(n)\leq f(n)\leq c_2g(n)
+$$
+
+For all $n\geq n_0$.
+
+### 1.4 Common Growth Rates
 
 Ordered approximately from slowest to fastest growth:
 
 $$
-O(1) < O(\log n) < O(n) < O(n\log n)
+O(1)<O(\log n)<O(n)<O(n\log n)
 $$
 
 $$
-< O(n^2) < O(n^3) < O(2^n) < O(n!)
+<O(n^2)<O(n^3)<O(2^n)<O(n!)
 $$
 
 ---
 
-# 2. Running Time Analysis and Correctness
+# 2. Running Time Analysis and Algorithm Correctness
 
-## Running Time Analysis
+## 2.1 Running Time Analysis
 
-Running time is expressed as a function of input size \(n\).
+Running time is expressed as a function of input size $n$.
 
-Three common cases:
+Three common cases are:
 
-- **Best Case:** Minimum time required for any input of size \(n\).
+- **Best Case:** Minimum running time for any input of size $n$.
 - **Average Case:** Expected running time over a specified input distribution.
-- **Worst Case:** Maximum time required for any input of size \(n\).
+- **Worst Case:** Maximum running time for any input of size $n$.
 
 ### Important Rules
 
 1. Sequential statements: Add their running times.
 2. Nested loops: Multiply iteration counts when appropriate.
-3. Conditional statements: Consider the cost of the condition and the executed branch.
+3. Conditional statements: Consider the condition and the executed branch.
 4. Recursive algorithms: Form and solve recurrence relations.
 5. Ignore constant factors and lower-order terms in asymptotic analysis.
 
-## Algorithm Correctness
+For example:
+
+$$
+T(n)=3n^2+5n+10
+$$
+
+The dominant term is $n^2$.
+
+Therefore:
+
+$$
+\boxed{T(n)=\Theta(n^2)}
+$$
+
+## 2.2 Algorithm Correctness
 
 An algorithm is correct if it produces the required output for every valid input and terminates.
 
@@ -95,40 +168,53 @@ A loop invariant is a property that remains true before and after every iteratio
 
 Three steps establish correctness using a loop invariant:
 
-1. **Initialization:** The invariant holds before the first iteration.
-2. **Maintenance:** If it holds before an iteration, it remains true afterward.
-3. **Termination:** When the loop terminates, the invariant establishes the algorithm's correctness.
+**1. Initialization**
+
+Show that the invariant holds before the first iteration.
+
+**2. Maintenance**
+
+Show that if the invariant holds before an iteration, it remains true afterward.
+
+**3. Termination**
+
+Show that when the loop terminates, the invariant implies that the algorithm has produced the correct result.
 
 ---
 
 # 3. Searching Algorithms
 
+Searching algorithms locate a particular element in a collection of data.
+
 ## 3.1 Linear Search
 
 Linear Search sequentially examines each element until the target is found or the array ends.
 
-**Algorithm:**
+### Algorithm
+
 ```text
 LINEAR-SEARCH(A, n, key)
     for i = 0 to n-1
         if A[i] == key
             return i
+
     return -1
 ```
 
-**Complexity Analysis:**
+### Complexity Analysis
 
 | Case | Time Complexity |
 |---|---|
-| Best | O(1) |
-| Average | O(n) |
-| Worst | O(n) |
-| Space | O(1) |
+| Best | $O(1)$ |
+| Average | $O(n)$ |
+| Worst | $O(n)$ |
+| Auxiliary Space | $O(1)$ |
 
-**Properties:**
+### Properties
+
 - Works on both sorted and unsorted arrays.
 - Simple to implement.
-- No preprocessing required.
+- Requires no preprocessing.
 - Inefficient for large datasets.
 
 ## 3.2 Binary Search
@@ -137,11 +223,12 @@ Binary Search repeatedly divides the search interval into two halves.
 
 **Prerequisite:** The input array must be sorted.
 
-**Algorithm:**
+### Algorithm
+
 ```text
 BINARY-SEARCH(A, low, high, key)
     while low <= high
-        mid = low + (high - low) / 2
+        mid = low + floor((high - low) / 2)
 
         if A[mid] == key
             return mid
@@ -155,20 +242,45 @@ BINARY-SEARCH(A, low, high, key)
     return -1
 ```
 
-**Complexity Analysis:**
+### Working
+
+1. Calculate the middle index.
+2. Compare the middle element with the target.
+3. If equal, return its position.
+4. If the target is greater, search the right half.
+5. Otherwise, search the left half.
+6. Repeat until the target is found or the search interval becomes empty.
+
+### Recurrence Relation
+
+In the worst case, the search interval is reduced by half:
+
+$$
+T(n)=T\left(\frac{n}{2}\right)+O(1)
+$$
+
+Therefore:
+
+$$
+\boxed{T(n)=\Theta(\log n)}
+$$
+
+### Complexity Analysis
 
 | Case | Time Complexity |
 |---|---|
-| Best | O(1) |
-| Average | O(log n) |
-| Worst | O(log n) |
-| Space (Iterative) | O(1) |
-| Space (Recursive) | O(log n) |
+| Best | $O(1)$ |
+| Average | $O(\log n)$ |
+| Worst | $O(\log n)$ |
+| Auxiliary Space (Iterative) | $O(1)$ |
+| Auxiliary Space (Recursive) | $O(\log n)$ |
 
-**Properties:**
+### Properties
+
 - Requires sorted data.
-- Uses divide and conquer.
-- Much faster than linear search for large sorted arrays.
+- Uses the divide-and-conquer principle.
+- Efficient for large sorted arrays.
+- Iterative implementation uses constant auxiliary space.
 - The midpoint calculation avoids potential integer overflow.
 
 ---
@@ -181,7 +293,8 @@ Insertion Sort builds a sorted portion of the array one element at a time.
 
 Each new element is inserted into its correct position within the already sorted portion.
 
-**Algorithm:**
+### Algorithm
+
 ```text
 INSERTION-SORT(A, n)
     for i = 1 to n-1
@@ -195,26 +308,37 @@ INSERTION-SORT(A, n)
         A[j+1] = key
 ```
 
-**Complexity Analysis:**
+### Working
+
+1. Assume the first element is already sorted.
+2. Select the next element as the key.
+3. Compare the key with elements in the sorted portion.
+4. Shift larger elements one position to the right.
+5. Insert the key into its correct position.
+6. Repeat until the entire array is sorted.
+
+### Complexity Analysis
 
 | Case | Time Complexity |
 |---|---|
-| Best | O(n) |
-| Average | O(n²) |
-| Worst | O(n²) |
-| Space | O(1) |
+| Best | $O(n)$ |
+| Average | $O(n^2)$ |
+| Worst | $O(n^2)$ |
+| Auxiliary Space | $O(1)$ |
 
-**Properties:**
+### Properties
+
 - Stable sorting algorithm.
 - In-place sorting.
-- Adaptive: Performs efficiently on nearly sorted arrays.
+- Adaptive: Efficient for nearly sorted arrays.
 - Suitable for small datasets.
 
 ## 4.2 Selection Sort
 
 Selection Sort repeatedly selects the minimum element from the unsorted portion and places it at the beginning.
 
-**Algorithm:**
+### Algorithm
+
 ```text
 SELECTION-SORT(A, n)
     for i = 0 to n-2
@@ -227,28 +351,38 @@ SELECTION-SORT(A, n)
         swap A[i] and A[minIndex]
 ```
 
-**Complexity Analysis:**
+### Working
+
+1. Divide the array into sorted and unsorted portions.
+2. Find the minimum element in the unsorted portion.
+3. Swap it with the first element of the unsorted portion.
+4. Expand the sorted portion.
+5. Repeat until the array is sorted.
+
+### Complexity Analysis
 
 | Case | Time Complexity |
 |---|---|
-| Best | O(n²) |
-| Average | O(n²) |
-| Worst | O(n²) |
-| Space | O(1) |
+| Best | $\Theta(n^2)$ |
+| Average | $\Theta(n^2)$ |
+| Worst | $\Theta(n^2)$ |
+| Auxiliary Space | $O(1)$ |
 
-**Properties:**
+### Properties
+
 - Standard implementation is not stable.
 - In-place sorting algorithm.
-- Performs at most $\(n-1\)$ swaps.
+- Performs exactly $n-1$ selections and at most $n-1$ swaps.
 - Not adaptive to nearly sorted data.
 
 ## 4.3 Bubble Sort
 
 Bubble Sort repeatedly compares adjacent elements and swaps them if they are in the wrong order.
 
-After each pass, the largest unsorted element moves to its correct position.
+After each pass, the largest remaining element moves to its correct position.
 
-**Algorithm:**
+### Algorithm
+
 ```text
 BUBBLE-SORT(A, n)
     for i = 0 to n-2
@@ -263,16 +397,25 @@ BUBBLE-SORT(A, n)
             break
 ```
 
-**Complexity Analysis:**
+### Working
+
+1. Compare adjacent elements.
+2. Swap them if they are in the wrong order.
+3. Continue through the array.
+4. The largest unsorted element reaches its correct position.
+5. Repeat until no swaps are required.
+
+### Complexity Analysis
 
 | Case | Time Complexity |
 |---|---|
-| Best | O(n) |
-| Average | O(n²) |
-| Worst | O(n²) |
-| Space | O(1) |
+| Best (Optimized) | $O(n)$ |
+| Average | $O(n^2)$ |
+| Worst | $O(n^2)$ |
+| Auxiliary Space | $O(1)$ |
 
-**Properties:**
+### Properties
+
 - Stable sorting algorithm.
 - In-place sorting.
 - Optimized version is adaptive.
@@ -284,7 +427,7 @@ BUBBLE-SORT(A, n)
 
 Heapsort is a comparison-based sorting algorithm that uses a Binary Heap data structure.
 
-### Binary Heap
+## 5.1 Binary Heap
 
 A Binary Heap is a complete binary tree satisfying the heap property.
 
@@ -292,46 +435,82 @@ A Binary Heap is a complete binary tree satisfying the heap property.
 
 **Min Heap:** Every parent node is less than or equal to its children.
 
-For an array representation using 0-based indexing:
+For an array representation using zero-based indexing:
 
 | Relationship | Index |
 |---|---|
 | Parent | $\lfloor(i-1)/2\rfloor$ |
-| Left Child | $\2i+1\$ |
-| Right Child | $\(2i+2\$ |
+| Left Child | $2i+1$ |
+| Right Child | $2i+2$ |
 
-### Heap Operations
+## 5.2 Heap Operations
 
 - **MAX-HEAPIFY:** Restores the max-heap property at a node.
 - **BUILD-MAX-HEAP:** Constructs a max heap from an unordered array.
 - **HEAPSORT:** Repeatedly extracts the maximum element and places it at the end.
 
-### Algorithm
+### MAX-HEAPIFY
+
+```text
+MAX-HEAPIFY(A, i, heapSize)
+    left = 2*i + 1
+    right = 2*i + 2
+    largest = i
+
+    if left < heapSize and A[left] > A[largest]
+        largest = left
+
+    if right < heapSize and A[right] > A[largest]
+        largest = right
+
+    if largest != i
+        swap A[i] and A[largest]
+        MAX-HEAPIFY(A, largest, heapSize)
+```
+
+### BUILD-MAX-HEAP
+
+```text
+BUILD-MAX-HEAP(A, n)
+    heapSize = n
+
+    for i = floor(n/2)-1 down to 0
+        MAX-HEAPIFY(A, i, heapSize)
+```
+
+### HEAPSORT Algorithm
 
 ```text
 HEAPSORT(A, n)
-    BUILD-MAX-HEAP(A)
+    BUILD-MAX-HEAP(A, n)
+
+    heapSize = n
 
     for i = n-1 down to 1
-        swap A[0], A[i]
+        swap A[0] and A[i]
+
         heapSize = heapSize - 1
-        MAX-HEAPIFY(A, 0)
+
+        MAX-HEAPIFY(A, 0, heapSize)
 ```
 
-### Complexity Analysis
+## 5.3 Complexity Analysis
 
 | Operation | Time Complexity |
 |---|---|
-| MAX-HEAPIFY | O(log n) |
-| BUILD-MAX-HEAP | O(n) |
-| Extract Maximum | O(log n) |
-| Heapsort | O(n log n) |
+| MAX-HEAPIFY | $O(\log n)$ |
+| BUILD-MAX-HEAP | $\Theta(n)$ |
+| Extract Maximum | $O(\log n)$ |
+| Heapsort | $\Theta(n\log n)$ |
 
-**Properties:**
-- Best, average and worst-case time: \(O(n\log n)\).
+### Properties
+
+- Best, average and worst-case time complexity: $\Theta(n\log n)$.
 - In-place sorting algorithm.
 - Standard implementation is not stable.
 - Provides guaranteed worst-case performance.
+
+**Important:** Building a heap takes $\Theta(n)$ time, not $O(n\log n)$. This follows from analyzing the number of nodes at each height in the heap.
 
 ---
 
@@ -340,84 +519,164 @@ HEAPSORT(A, n)
 Comparison-based sorting algorithms have a worst-case lower bound of:
 
 $$
-\Omega(n\log n)
+\boxed{\Omega(n\log n)}
 $$
 
-However, algorithms that exploit properties of the input can achieve linear-time sorting under suitable assumptions.
+This lower bound applies to comparison-based sorting of $n$ distinct elements.
 
-### 6.1 Counting Sort
+However, sorting algorithms that exploit properties of the input can achieve linear or near-linear running time under suitable assumptions.
+
+## 6.1 Counting Sort
 
 Counting Sort sorts elements by counting the frequency of each distinct key.
 
-**Working:**
-1. Find the range of input values.
+It is particularly effective when the range of possible integer keys is not excessively large.
+
+### Working
+
+1. Determine the range of input values.
 2. Count the occurrences of each value.
-3. Compute cumulative frequencies.
-4. Place elements in their correct output positions.
+3. Calculate cumulative frequencies.
+4. Place elements into their correct output positions.
+5. Copy the sorted output back if required.
 
-**Complexity:**
+### Complexity
+
+Let:
+
+- $n$ = Number of elements.
+- $k$ = Range of possible key values.
 
 $$
-T(n,k)=O(n+k)
+\boxed{T(n,k)=O(n+k)}
 $$
 
-Where:
-- $\(n$ = Number of elements.
-- $\(k$ = Range of possible keys.
+Auxiliary Space:
 
-**Properties:**
+$$
+O(n+k)
+$$
+
+### Properties
+
 - Non-comparison-based sorting.
 - Stable when implemented using cumulative counts and reverse traversal.
 - Requires additional memory.
-- Effective when the key range is not excessively large.
+- Effective when the key range is reasonably small.
 
-### 6.2 Radix Sort
+## 6.2 Radix Sort
 
-Radix Sort processes numbers digit by digit, typically from the least significant digit to the most significant digit.
+Radix Sort sorts numbers digit by digit, typically from the least significant digit to the most significant digit.
 
 It uses a stable sorting algorithm, commonly Counting Sort, at each digit position.
 
-**Complexity:**
+### Working
+
+1. Identify the maximum number of digit positions.
+2. Sort elements according to the least significant digit.
+3. Move to the next digit position.
+4. Repeat until all digit positions have been processed.
+
+### Complexity
+
+Let:
+
+- $n$ = Number of elements.
+- $d$ = Number of digit positions.
+- $k$ = Range of each digit.
+
+Using Counting Sort for each digit:
 
 $$
-T(n)=O(d(n+k))
+\boxed{T(n)=O(d(n+k))}
 $$
 
-Where:
-- $\d\)$ = Number of digit positions.
-- $(k\)$ = Range of each digit.
-
-### 6.3 Bucket Sort
-
-Bucket Sort distributes elements into multiple buckets, sorts individual buckets, and concatenates the results.
-
-**Expected Complexity:**
+Auxiliary Space:
 
 $$
-O(n)
+O(n+k)
 $$
 
-Under suitable distribution assumptions.
+### Properties
 
-**Comparison:**
+- Non-comparison-based sorting.
+- Stable when the digit-level sorting algorithm is stable.
+- Performance depends on the number of digits and the digit range.
+- Useful for integers, strings, and fixed-length keys.
 
-| Algorithm | Time Complexity | Additional Space |
-|---|---|---|
-| Counting Sort | O(n+k) | O(n+k) |
-| Radix Sort | O(d(n+k)) | O(n+k) |
-| Bucket Sort | Expected O(n) | O(n+k) |
+## 6.3 Bucket Sort
+
+Bucket Sort distributes elements into multiple buckets, sorts the individual buckets, and concatenates the results.
+
+It is especially useful when input values are approximately uniformly distributed over a known range.
+
+### Working
+
+1. Create a collection of empty buckets.
+2. Distribute input elements into the buckets.
+3. Sort each bucket individually.
+4. Concatenate the sorted buckets.
+
+### Complexity
+
+Under suitable uniform-distribution assumptions and with an appropriate bucket arrangement:
+
+$$
+\boxed{E[T(n)]=O(n)}
+$$
+
+A common general expected-time expression is:
+
+$$
+O(n+k)
+$$
+
+Where $k$ represents the number of buckets, assuming suitable constant-time distribution and an appropriate per-bucket sorting method.
+
+Worst-case time can be:
+
+$$
+O(n^2)
+$$
+
+For example, if all elements fall into one bucket and that bucket is sorted using Insertion Sort.
+
+### Properties
+
+- Distribution-based sorting algorithm.
+- Expected linear-time performance under suitable assumptions.
+- Performance depends on the input distribution and bucket design.
+- Can require additional memory.
+
+## 6.4 Comparison
+
+| Algorithm | Time Complexity | Auxiliary Space | Stable? |
+|---|---|---|---|
+| Counting Sort | $O(n+k)$ | $O(n+k)$ | Yes* |
+| Radix Sort | $O(d(n+k))$ | $O(n+k)$ | Yes* |
+| Bucket Sort | Expected $O(n+k)$ under suitable assumptions | $O(n+k)$ | Depends on implementation |
+
+*Stability depends on the implementation. Radix Sort requires a stable sorting algorithm at each digit position.*
 
 ---
 
 # 7. Introduction to Divide and Conquer
 
-Divide and Conquer is an algorithm design paradigm that solves a problem by breaking it into smaller subproblems.
+Divide and Conquer is an algorithm design paradigm that solves complex problems by dividing them into smaller subproblems.
 
-### Three Fundamental Steps
+### 7.1 Three Fundamental Steps
 
-1. **Divide:** Break the original problem into smaller subproblems.
-2. **Conquer:** Solve the subproblems recursively.
-3. **Combine:** Merge the solutions to obtain the final result.
+**1. Divide**
+
+Break the original problem into smaller subproblems.
+
+**2. Conquer**
+
+Solve the subproblems recursively.
+
+**3. Combine**
+
+Merge the solutions of the subproblems to obtain the final solution.
 
 ### General Structure
 
@@ -426,7 +685,7 @@ DIVIDE-AND-CONQUER(problem)
     if problem is small
         solve directly
 
-    divide problem into subproblems
+    divide problem into smaller subproblems
 
     solve each subproblem recursively
 
@@ -435,55 +694,82 @@ DIVIDE-AND-CONQUER(problem)
     return final result
 ```
 
-### Recurrence Relations
+## 7.2 Recurrence Relations
 
-A common recurrence for divide-and-conquer algorithms is:
+A common recurrence relation for divide-and-conquer algorithms is:
 
 $$
-T(n)=aT(n/b)+f(n)
+\boxed{T(n)=aT(n/b)+f(n)}
 $$
 
 Where:
-- $\(a\$ = Number of subproblems.
-- $\(n/b\$ = Size of each subproblem.
-- $\(f(n)\$ = Division and combination cost.
 
-### Master Theorem
+- $a$ = Number of recursive subproblems.
+- $n/b$ = Size of each subproblem.
+- $f(n)$ = Cost of dividing and combining the solutions.
 
-For:
+## 7.3 Master Theorem
+
+For a recurrence of the form:
 
 $$
 T(n)=aT(n/b)+f(n)
 $$
 
-Let:
+Where $a\geq1$ and $b>1$, define:
 
 $$
 c=\log_b a
 $$
 
-**Case 1:**
+The Master Theorem provides three common cases.
 
-If $\(f(n)=O(n^{c-\epsilon})\)$, then:
+### Case 1: Subproblem Work Dominates
 
-$$
-T(n)=\Theta(n^c)
-$$
-
-**Case 2:**
-
-If $\(f(n)=\Theta(n^c\log^k n)\)$, then:
+If:
 
 $$
-T(n)=\Theta(n^c\log^{k+1}n)
+f(n)=O(n^{c-\epsilon})
 $$
 
-**Case 3:**
-
-If $\(f(n)=\Omega(n^{c+\epsilon})\)$, and the regularity condition holds, then:
+For some constant $\epsilon>0$, then:
 
 $$
-T(n)=\Theta(f(n))
+\boxed{T(n)=\Theta(n^c)}
+$$
+
+### Case 2: Balanced Growth
+
+If:
+
+$$
+f(n)=\Theta(n^c\log^k n)
+$$
+
+For $k\geq0$, then:
+
+$$
+\boxed{T(n)=\Theta(n^c\log^{k+1}n)}
+$$
+
+### Case 3: Combining Work Dominates
+
+If:
+
+$$
+f(n)=\Omega(n^{c+\epsilon})
+$$
+
+For some constant $\epsilon>0$, and the regularity condition holds:
+
+$$
+af(n/b)\leq cf(n)
+$$
+
+For some constant $c<1$ and sufficiently large $n$, then:
+
+$$
+\boxed{T(n)=\Theta(f(n))}
 $$
 
 ---
@@ -492,7 +778,7 @@ $$
 
 Merge Sort is a stable comparison-based sorting algorithm based on divide and conquer.
 
-### Working
+## 8.1 Working
 
 1. Divide the array into two halves.
 2. Recursively sort both halves.
@@ -506,12 +792,43 @@ MERGE-SORT(A, low, high)
         mid = floor((low + high) / 2)
 
         MERGE-SORT(A, low, mid)
+
         MERGE-SORT(A, mid+1, high)
 
         MERGE(A, low, mid, high)
 ```
 
-### Recurrence Relation
+### Merge Procedure
+
+```text
+MERGE(A, low, mid, high)
+    create temporary arrays L and R
+
+    copy A[low...mid] into L
+    copy A[mid+1...high] into R
+
+    i = 0
+    j = 0
+    k = low
+
+    while i < length(L) and j < length(R)
+        if L[i] <= R[j]
+            A[k] = L[i]
+            i = i + 1
+        else
+            A[k] = R[j]
+            j = j + 1
+
+        k = k + 1
+
+    copy remaining elements of L into A
+
+    copy remaining elements of R into A
+```
+
+## 8.2 Recurrence Relation
+
+Merge Sort divides the problem into two subproblems of size $n/2$ and takes linear time to merge them.
 
 $$
 T(n)=2T(n/2)+O(n)
@@ -520,22 +837,35 @@ $$
 Using the Master Theorem:
 
 $$
+a=2,\quad b=2,\quad f(n)=\Theta(n)
+$$
+
+$$
+\log_b a=\log_2 2=1
+$$
+
+This is Case 2 of the Master Theorem.
+
+Therefore:
+
+$$
 \boxed{T(n)=\Theta(n\log n)}
 $$
 
-### Complexity Analysis
+## 8.3 Complexity Analysis
 
 | Case | Time Complexity |
 |---|---|
-| Best | O(n log n) |
-| Average | O(n log n) |
-| Worst | O(n log n) |
-| Auxiliary Space | O(n) |
+| Best | $\Theta(n\log n)$ |
+| Average | $\Theta(n\log n)$ |
+| Worst | $\Theta(n\log n)$ |
+| Auxiliary Space | $O(n)$ |
 
-**Properties:**
+### Properties
+
 - Stable sorting algorithm.
-- Not in-place in its standard array implementation.
-- Predictable performance.
+- Standard array implementation is not in-place.
+- Predictable performance across different input arrangements.
 - Particularly useful for linked lists and external sorting.
 
 ---
@@ -544,7 +874,7 @@ $$
 
 Quick Sort is a divide-and-conquer sorting algorithm that partitions an array around a selected pivot.
 
-### Working
+## 9.1 Working
 
 1. Select a pivot element.
 2. Partition the array so that elements smaller than or equal to the pivot appear before it, and larger elements appear after it.
@@ -558,27 +888,506 @@ QUICK-SORT(A, low, high)
         p = PARTITION(A, low, high)
 
         QUICK-SORT(A, low, p-1)
+
         QUICK-SORT(A, p+1, high)
+```
+
+### Lomuto Partition
+
+The following partition procedure uses the last element as its pivot.
+
+```text
+PARTITION(A, low, high)
+    pivot = A[high]
+    i = low - 1
+
+    for j = low to high-1
+        if A[j] <= pivot
+            i = i + 1
+            swap A[i] and A[j]
+
+    swap A[i+1] and A[high]
+
+    return i + 1
+```
+
+## 9.2 Complexity Analysis
+
+| Case | Time Complexity |
+|---|---|
+| Best | $\Theta(n\log n)$ |
+| Average | $\Theta(n\log n)$ |
+| Worst | $\Theta(n^2)$ |
+
+### Recurrence Relations
+
+**Balanced Partition:**
+
+$$
+T(n)=2T(n/2)+\Theta(n)
+$$
+
+Therefore:
+
+$$
+T(n)=\Theta(n\log n)
+$$
+
+**Worst-Case Partition:**
+
+When one partition contains $n-1$ elements and the other contains zero elements:
+
+$$
+T(n)=T(n-1)+\Theta(n)
+$$
+
+Expanding:
+
+$$
+T(n)=\Theta(n+(n-1)+\cdots+1)
+$$
+
+Therefore:
+
+$$
+\boxed{T(n)=\Theta(n^2)}
+$$
+
+### Auxiliary Space
+
+| Case | Auxiliary Space |
+|---|---|
+| Average / Balanced | $O(\log n)$ |
+| Worst | $O(n)$ |
+
+### Properties
+
+- Usually in-place apart from its recursion stack.
+- Standard implementation is not stable.
+- Excellent practical performance in many settings.
+- Worst-case performance occurs when partitions are highly unbalanced.
+
+---
+
+# 10. Randomized Quick Sort
+
+Randomized Quick Sort improves Quick Sort by selecting its pivot randomly rather than deterministically.
+
+## 10.1 Working
+
+1. Randomly select a pivot from the current subarray.
+2. Exchange it with the position expected by the partition procedure.
+3. Partition the array.
+4. Recursively sort the resulting partitions.
+
+### Algorithm
+
+```text
+RANDOMIZED-QUICK-SORT(A, low, high)
+    if low < high
+        p = RANDOMIZED-PARTITION(A, low, high)
+
+        RANDOMIZED-QUICK-SORT(A, low, p-1)
+
+        RANDOMIZED-QUICK-SORT(A, p+1, high)
+```
+
+### Randomized Partition
+
+```text
+RANDOMIZED-PARTITION(A, low, high)
+    r = RANDOM(low, high)
+
+    swap A[r] and A[high]
+
+    return PARTITION(A, low, high)
+```
+
+## 10.2 Complexity Analysis
+
+| Case | Time Complexity |
+|---|---|
+| Expected | $\Theta(n\log n)$ |
+| Worst | $\Theta(n^2)$ |
+
+### Key Observations
+
+- Random pivot selection reduces dependence on the original input arrangement.
+- Expected running time is $\Theta(n\log n)$.
+- Worst-case running time remains $\Theta(n^2)$.
+- Randomization improves expected performance but does not eliminate the worst case.
+- Expected auxiliary recursion space is $O(\log n)$; worst-case recursion space is $O(n)$.
+
+---
+
+# 11. Maximum Subarray Problem
+
+The Maximum Subarray Problem asks us to find a contiguous subarray with the maximum possible sum.
+
+Given an array:
+
+$$
+A=[-2,1,-3,4,-1,2,1,-5,4]
+$$
+
+The maximum-sum contiguous subarray is:
+
+$$
+[4,-1,2,1]
+$$
+
+Its sum is:
+
+$$
+4-1+2+1=\boxed{6}
+$$
+
+## 11.1 Divide-and-Conquer Approach
+
+The maximum subarray must belong to one of three categories:
+
+1. Entirely in the left half.
+2. Entirely in the right half.
+3. Crossing the midpoint.
+
+Therefore:
+
+$$
+\boxed{
+MAX(L,R,C)=\max(L,R,C)
+}
+$$
+
+Where:
+
+- $L$ = Maximum subarray sum in the left half.
+- $R$ = Maximum subarray sum in the right half.
+- $C$ = Maximum crossing subarray sum.
+
+### Maximum Crossing Subarray
+
+The crossing subarray consists of:
+
+- A maximum-sum suffix of the left half.
+- A maximum-sum prefix of the right half.
+
+Its sum is:
+
+$$
+C=C_L+C_R
+$$
+
+Where $C_L$ and $C_R$ are the corresponding maximum suffix and prefix sums.
+
+### Algorithm
+
+```text
+MAXIMUM-SUBARRAY(A, low, high)
+    if low == high
+        return (low, high, A[low])
+
+    mid = floor((low + high) / 2)
+
+    (leftLow, leftHigh, leftSum) =
+        MAXIMUM-SUBARRAY(A, low, mid)
+
+    (rightLow, rightHigh, rightSum) =
+        MAXIMUM-SUBARRAY(A, mid+1, high)
+
+    (crossLow, crossHigh, crossSum) =
+        MAXIMUM-CROSSING-SUBARRAY(A, low, mid, high)
+
+    return the subarray with maximum sum among:
+        leftSum, rightSum, crossSum
+```
+
+## 11.2 Recurrence Relation
+
+The array is divided into two halves, and the crossing subarray is calculated in linear time.
+
+$$
+T(n)=2T(n/2)+\Theta(n)
+$$
+
+Using the Master Theorem:
+
+$$
+\boxed{T(n)=\Theta(n\log n)}
+$$
+
+## 11.3 Kadane's Algorithm
+
+Kadane's Algorithm provides an alternative linear-time solution to the Maximum Subarray Problem.
+
+It maintains:
+
+- The maximum subarray sum ending at the current position.
+- The maximum subarray sum found so far.
+
+### Recurrence
+
+Let $E_i$ denote the maximum sum of a non-empty subarray ending at index $i$.
+
+$$
+\boxed{
+E_i=\max(A_i,E_{i-1}+A_i)
+}
+$$
+
+The global maximum is:
+
+$$
+\boxed{
+G_i=\max(G_{i-1},E_i)
+}
+$$
+
+### Algorithm
+
+```text
+KADANE(A, n)
+    currentMax = A[0]
+    globalMax = A[0]
+
+    for i = 1 to n-1
+        currentMax = max(A[i], currentMax + A[i])
+
+        globalMax = max(globalMax, currentMax)
+
+    return globalMax
 ```
 
 ### Complexity Analysis
 
-| Case | Time Complexity |
+| Approach | Time Complexity |
 |---|---|
-| Best | O(n log n) |
-| Average | O(n log n) |
-| Worst | O(n²) |
-| Auxiliary Space | O(log n) average |
+| Brute Force (Direct Enumeration) | $O(n^3)$ |
+| Brute Force with Running Sums | $O(n^2)$ |
+| Divide and Conquer | $O(n\log n)$ |
+| Kadane's Algorithm | $O(n)$ |
 
-**Properties:**
-- Usually in-place apart from recursion stack.
-- Standard implementation is not stable.
-- Excellent practical performance.
-- Worst case occurs when partitions are highly unbalanced.
+Kadane's Algorithm uses:
 
-### Partitioning
+$$
+O(1)
+$$
 
-Partitioning rearranges elements around the pivot and returns its final position.
+Auxiliary space.
+
+**Important:** Initializing both variables with $A[0]$ ensures that the algorithm correctly handles arrays containing entirely negative values.
+
+---
+
+# 12. Strassen's Matrix Multiplication
+
+Strassen's Algorithm is a divide-and-conquer algorithm that multiplies two matrices using seven recursive multiplications instead of the conventional eight.
+
+## 12.1 Conventional Matrix Multiplication
+
+For two $n\times n$ matrices, conventional multiplication requires:
+
+$$
+T(n)=8T(n/2)+\Theta(n^2)
+$$
+
+Applying the Master Theorem:
+
+$$
+\log_2 8=3
+$$
+
+Therefore:
+
+$$
+\boxed{T(n)=\Theta(n^3)}
+$$
+
+## 12.2 Strassen's Approach
+
+Divide matrices $A$ and $B$ into four submatrices:
+
+$$
+A=
+\begin{bmatrix}
+A_{11}&A_{12}\\
+A_{21}&A_{22}
+\end{bmatrix}
+$$
+
+$$
+B=
+\begin{bmatrix}
+B_{11}&B_{12}\\
+B_{21}&B_{22}
+\end{bmatrix}
+$$
+
+Each submatrix has dimensions $(n/2)\times(n/2)$.
+
+Instead of performing eight recursive multiplications, Strassen's algorithm computes seven products.
+
+### Seven Products
+
+$$
+M_1=(A_{11}+A_{22})(B_{11}+B_{22})
+$$
+
+$$
+M_2=(A_{21}+A_{22})B_{11}
+$$
+
+$$
+M_3=A_{11}(B_{12}-B_{22})
+$$
+
+$$
+M_4=A_{22}(B_{21}-B_{11})
+$$
+
+$$
+M_5=(A_{11}+A_{12})B_{22}
+$$
+
+$$
+M_6=(A_{21}-A_{11})(B_{11}+B_{12})
+$$
+
+$$
+M_7=(A_{12}-A_{22})(B_{21}+B_{22})
+$$
+
+### Constructing the Result
+
+The resulting matrix $C=AB$ is constructed using:
+
+$$
+C_{11}=M_1+M_4-M_5+M_7
+$$
+
+$$
+C_{12}=M_3+M_5
+$$
+
+$$
+C_{21}=M_2+M_4
+$$
+
+$$
+C_{22}=M_1-M_2+M_3+M_6
+$$
+
+Thus:
+
+$$
+C=
+\begin{bmatrix}
+C_{11}&C_{12}\\
+C_{21}&C_{22}
+\end{bmatrix}
+$$
+
+## 12.3 Complexity Analysis
+
+Strassen's algorithm performs seven recursive multiplications, each involving matrices of size $n/2$, along with matrix additions and subtractions.
+
+The recurrence is:
+
+$$
+T(n)=7T(n/2)+\Theta(n^2)
+$$
+
+Using the Master Theorem:
+
+$$
+a=7,\quad b=2
+$$
+
+$$
+\log_b a=\log_2 7
+$$
+
+Since the non-recursive work is asymptotically smaller than $n^{\log_2 7}$:
+
+$$
+\boxed{T(n)=\Theta(n^{\log_2 7})}
+$$
+
+Numerically:
+
+$$
+\boxed{T(n)=\Theta(n^{2.8074})}
+$$
+
+### Properties
+
+- Uses seven recursive multiplications.
+- Asymptotically faster than conventional matrix multiplication.
+- Requires additional additions and subtractions.
+- Often beneficial for sufficiently large matrices.
+- Practical performance depends on implementation and matrix size.
+- Matrices whose dimensions are not powers of two can be padded with zeros, or handled using suitable alternative implementations.
+
+---
+
+# 13. Algorithm Complexity Cheat Sheet
+
+## 13.1 Searching Algorithms
+
+| Algorithm | Best Case | Average Case | Worst Case | Auxiliary Space |
+|---|---|---|---|---|
+| Linear Search | $O(1)$ | $O(n)$ | $O(n)$ | $O(1)$ |
+| Binary Search | $O(1)$ | $O(\log n)$ | $O(\log n)$ | $O(1)$ iterative |
+
+## 13.2 Sorting Algorithms
+
+| Algorithm | Best Case | Average Case | Worst Case | Stable? | In-Place? |
+|---|---|---|---|---|---|
+| Insertion Sort | $O(n)$ | $O(n^2)$ | $O(n^2)$ | Yes | Yes |
+| Selection Sort | $O(n^2)$ | $O(n^2)$ | $O(n^2)$ | No | Yes |
+| Bubble Sort | $O(n)$ | $O(n^2)$ | $O(n^2)$ | Yes | Yes |
+| Heapsort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | No | Yes |
+| Merge Sort | $\Theta(n\log n)$ | $\Theta(n\log n)$ | $\Theta(n\log n)$ | Yes | No (standard array implementation) |
+| Quick Sort | $\Theta(n\log n)$ | Expected $\Theta(n\log n)$ | $\Theta(n^2)$ | No | Usually |
+| Counting Sort | $O(n+k)$ | $O(n+k)$ | $O(n+k)$ | Yes* | No |
+| Radix Sort | $O(d(n+k))$ | $O(d(n+k))$ | $O(d(n+k))$ | Yes* | No |
+| Bucket Sort | Expected $O(n+k)$ | Expected $O(n+k)$ | $O(n^2)$ (typical Insertion Sort buckets) | Depends | Depends |
+
+*Stability depends on implementation.*
+
+## 13.3 Important Recurrence Relations
+
+| Algorithm | Recurrence | Complexity |
+|---|---|---|
+| Binary Search | $T(n)=T(n/2)+O(1)$ | $\Theta(\log n)$ |
+| Merge Sort | $T(n)=2T(n/2)+O(n)$ | $\Theta(n\log n)$ |
+| Quick Sort (Balanced) | $T(n)=2T(n/2)+O(n)$ | $\Theta(n\log n)$ |
+| Quick Sort (Worst) | $T(n)=T(n-1)+O(n)$ | $\Theta(n^2)$ |
+| Maximum Subarray | $T(n)=2T(n/2)+O(n)$ | $\Theta(n\log n)$ |
+| Strassen's Algorithm | $T(n)=7T(n/2)+O(n^2)$ | $\Theta(n^{2.8074})$ |
+
+---
+
+## Key Takeaways
+
+1. Always distinguish between best-case, average-case, and worst-case complexity.
+2. Binary Search requires sorted data.
+3. Insertion Sort is particularly efficient for small or nearly sorted arrays.
+4. Selection Sort performs at most $n-1$ swaps.
+5. Heapsort guarantees $\Theta(n\log n)$ worst-case performance.
+6. Linear-time sorting algorithms exploit assumptions about input keys or distributions.
+7. Divide and Conquer follows the Divide → Conquer → Combine paradigm.
+8. The Master Theorem helps analyze many divide-and-conquer recurrences.
+9. Merge Sort guarantees $\Theta(n\log n)$ time and is stable.
+10. Quick Sort offers excellent expected performance but has a $\Theta(n^2)$ worst case.
+11. Randomization improves expected Quick Sort performance.
+12. Kadane's Algorithm solves the Maximum Subarray Problem in $\Theta(n)$ time.
+13. Strassen's Algorithm reduces the number of recursive matrix multiplications from eight to seven.
+
+---
+
+**End of Unit 1 — Algorithm Analysis, Searching & Sorting**
+
+*These notes serve as a quick-reference guide for algorithm design, implementation, correctness proofs, recurrence relations, and asymptotic complexity analysis.*
 
 # Unit 2 — Graph Algorithms & Greedy Algorithms
 
@@ -591,7 +1400,7 @@ Partitioning rearranges elements around the pivot and returns its final position
 ## Table of Contents
 
 1. [Introduction to Graphs](#1-introduction-to-graphs)
-2. [Graph Traversals](#2-review-of-graph-traversals)
+2. [Review of Graph Traversals](#2-review-of-graph-traversals)
    - Breadth-First Search (BFS)
    - Depth-First Search (DFS)
 3. [Graph Connectivity](#3-graph-connectivity)
@@ -615,20 +1424,20 @@ Partitioning rearranges elements around the pivot and returns its final position
 
 # 1. Introduction to Graphs
 
-A **graph** is a mathematical structure consisting of a set of vertices (nodes) and a set of edges connecting pairs of vertices.
+A **Graph** is a mathematical structure consisting of a collection of vertices (nodes) and edges connecting pairs of vertices.
 
-A graph is represented as:
+A graph is represented mathematically as:
 
-\[
+$$
 G=(V,E)
-\]
+$$
 
 Where:
 
-- \(V\) = Set of vertices.
-- \(E\) = Set of edges.
+- $V$ = Set of vertices.
+- $E$ = Set of edges.
 
-### Types of Graphs
+## 1.1 Types of Graphs
 
 | Graph Type | Description |
 |---|---|
@@ -642,59 +1451,67 @@ Where:
 | Cyclic Graph | Contains at least one cycle. |
 | Acyclic Graph | Contains no cycles. |
 
-### Graph Representation
+## 1.2 Graph Representation
 
 Graphs are commonly represented using two approaches.
 
-**1. Adjacency Matrix**
+### 1. Adjacency Matrix
 
-A two-dimensional matrix where:
+An adjacency matrix is a two-dimensional array representing the presence or absence of edges.
 
-\[
+For a graph with $V$ vertices:
+
+$$
 A[i][j]=
 \begin{cases}
-1 & \text{if edge }(i,j)\text{ exists}\\
+1 & \text{if an edge from }i\text{ to }j\text{ exists}\\
 0 & \text{otherwise}
 \end{cases}
-\]
+$$
 
-For weighted graphs, the matrix stores edge weights instead of simply 0 and 1.
+For weighted graphs, the matrix stores edge weights instead of simply $0$ and $1$.
 
-- Space Complexity: \(O(V^2)\)
-- Checking whether an edge exists: \(O(1)\)
-- Iterating over all neighbours: \(O(V)\)
+**Properties:**
 
-**2. Adjacency List**
+- Space Complexity: $O(V^2)$
+- Checking whether an edge exists: $O(1)$
+- Iterating over all neighbours of a vertex: $O(V)$
 
-Each vertex maintains a list of its neighbouring vertices.
+### 2. Adjacency List
 
-- Space Complexity: \(O(V+E)\)
-- Checking for an edge: \(O(\deg(v))\)
-- Iterating over neighbours: \(O(\deg(v))\)
+An adjacency list maintains a list of neighbouring vertices for every vertex.
 
-**Comparison:**
+**Properties:**
+
+- Space Complexity: $O(V+E)$
+- Checking for an edge: $O(\deg(v))$
+- Iterating over neighbours: $O(\deg(v))$
+
+### Comparison
 
 | Feature | Adjacency Matrix | Adjacency List |
 |---|---|---|
-| Space | O(V²) | O(V+E) |
-| Edge Lookup | O(1) | O(degree) |
-| Neighbour Traversal | O(V) | O(degree) |
+| Space | $O(V^2)$ | $O(V+E)$ |
+| Edge Lookup | $O(1)$ | $O(\deg(v))$ |
+| Neighbour Traversal | $O(V)$ | $O(\deg(v))$ |
 | Suitable For | Dense graphs | Sparse graphs |
+
+**Note:** For an undirected graph, every edge is represented in two adjacency lists. For a directed graph, every edge is represented in the adjacency list of its source vertex.
 
 ---
 
 # 2. Review of Graph Traversals
 
-Graph traversal refers to systematically visiting the vertices of a graph.
+Graph Traversal refers to systematically visiting the vertices of a graph.
 
-Two fundamental traversal algorithms are:
+Two fundamental graph traversal algorithms are:
 
-1. Breadth-First Search (BFS)
-2. Depth-First Search (DFS)
+1. Breadth-First Search (BFS).
+2. Depth-First Search (DFS).
 
 ## 2.1 Breadth-First Search (BFS)
 
-BFS explores a graph level by level, visiting all immediate neighbours before moving to the next level.
+Breadth-First Search explores a graph level by level, visiting all immediate neighbours before moving to the next level.
 
 It uses a **Queue (FIFO)** data structure.
 
@@ -725,16 +1542,29 @@ BFS(G, source)
 2. Mark it as visited and insert it into the queue.
 3. Remove the front vertex from the queue.
 4. Visit all its unvisited neighbours.
-5. Insert the newly discovered vertices into the queue.
-6. Repeat until the queue becomes empty.
+5. Mark newly discovered vertices as visited.
+6. Insert them into the queue.
+7. Repeat until the queue becomes empty.
 
 ### Complexity Analysis
 
-| Representation | Time Complexity |
-|---|---|
-| Adjacency List | O(V + E) |
-| Adjacency Matrix | O(V²) |
-| Auxiliary Space | O(V) |
+For an adjacency-list representation:
+
+$$
+\boxed{T(V,E)=O(V+E)}
+$$
+
+For an adjacency-matrix representation:
+
+$$
+\boxed{T(V,E)=O(V^2)}
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
 
 ### Applications
 
@@ -742,17 +1572,17 @@ BFS(G, source)
 - Finding connected components.
 - Testing graph bipartiteness.
 - Level-order traversal of trees.
-- Finding minimum number of edges between two vertices.
+- Finding the minimum number of edges between two vertices.
 
 **Important:** BFS finds shortest paths in terms of the number of edges in an unweighted graph. It does not generally find minimum-weight paths in weighted graphs.
 
 ## 2.2 Depth-First Search (DFS)
 
-DFS explores as far as possible along one path before backtracking.
+Depth-First Search explores as far as possible along one path before backtracking.
 
 It uses a **Stack (LIFO)**, either explicitly or through recursion.
 
-### Algorithm
+### Recursive Algorithm
 
 ```text
 DFS(G, u)
@@ -760,10 +1590,13 @@ DFS(G, u)
 
     for each neighbour v of u
         if v is not visited
+            parent[v] = u
             DFS(G, v)
 ```
 
-For a disconnected graph, DFS must be initiated from every unvisited vertex:
+For a disconnected graph, DFS must be initiated from every unvisited vertex.
+
+### Complete DFS Traversal
 
 ```text
 DFS-TRAVERSAL(G)
@@ -779,14 +1612,27 @@ DFS-TRAVERSAL(G)
 3. Visit an unvisited neighbour recursively.
 4. Continue exploring deeper until no unvisited neighbour remains.
 5. Backtrack and explore remaining neighbours.
+6. Repeat until all reachable vertices have been visited.
 
 ### Complexity Analysis
 
-| Representation | Time Complexity |
-|---|---|
-| Adjacency List | O(V + E) |
-| Adjacency Matrix | O(V²) |
-| Auxiliary Space | O(V) |
+For an adjacency-list representation:
+
+$$
+\boxed{T(V,E)=O(V+E)}
+$$
+
+For an adjacency-matrix representation:
+
+$$
+\boxed{T(V,E)=O(V^2)}
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
 
 ### Applications
 
@@ -797,7 +1643,7 @@ DFS-TRAVERSAL(G)
 - Finding strongly connected components.
 - Detecting paths between vertices.
 
-### BFS vs DFS
+## 2.3 BFS vs DFS
 
 | Feature | BFS | DFS |
 |---|---|---|
@@ -806,7 +1652,8 @@ DFS-TRAVERSAL(G)
 | Shortest Path | Yes, unweighted graphs | Not guaranteed |
 | Cycle Detection | Possible | Possible |
 | Topological Sorting | Not standard | Yes |
-| Time Complexity | O(V + E) | O(V + E) |
+| Time Complexity (Adjacency List) | $O(V+E)$ | $O(V+E)$ |
+| Auxiliary Space | $O(V)$ | $O(V)$ |
 
 ---
 
@@ -822,13 +1669,17 @@ If some vertices cannot be reached from others, the graph is disconnected.
 
 ### Connected Components
 
-A connected component is a maximal connected subgraph.
+A Connected Component is a maximal connected subgraph of an undirected graph.
 
-**Finding Connected Components Using DFS:**
+A maximal connected subgraph contains every vertex reachable from its vertices.
+
+### Finding Connected Components Using DFS
 
 ```text
 CONNECTED-COMPONENTS(G)
     count = 0
+
+    initialize all vertices as unvisited
 
     for each vertex u in V
         if u is not visited
@@ -838,64 +1689,112 @@ CONNECTED-COMPONENTS(G)
     return count
 ```
 
-Each new DFS traversal identifies another connected component.
+Every new DFS traversal identifies another connected component.
 
-**Complexity:**
+### Complexity Analysis
 
-\[
-O(V+E)
-\]
+$$
+\boxed{T(V,E)=O(V+E)}
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
 
 ## 3.2 Connectivity in Directed Graphs
 
 Directed graphs have different notions of connectivity.
 
-**Strongly Connected Graph:**
+### Strongly Connected Graph
 
-A directed graph is strongly connected if every vertex is reachable from every other vertex following edge directions.
+A directed graph is strongly connected if every vertex is reachable from every other vertex by following the direction of edges.
 
-**Weakly Connected Graph:**
+### Weakly Connected Graph
 
-A directed graph is weakly connected if replacing its directed edges with undirected edges makes it connected.
+A directed graph is weakly connected if replacing its directed edges with undirected edges makes the graph connected.
 
 ### Strongly Connected Components (SCCs)
 
-A Strongly Connected Component is a maximal subset of vertices in which every vertex is reachable from every other vertex.
+A Strongly Connected Component is a maximal subset of vertices in which every vertex is reachable from every other vertex within that subset.
 
-Kosaraju's algorithm finds SCCs using two DFS passes:
+### Kosaraju's Algorithm
 
-1. Perform DFS on the original graph and record vertices in finishing-time order.
+Kosaraju's algorithm identifies all strongly connected components using two DFS passes.
+
+**Steps:**
+
+1. Perform DFS on the original graph and record vertices in order of finishing times.
 2. Reverse every edge to construct the transpose graph.
-3. Process vertices in decreasing order of finishing time, performing DFS on the transpose graph.
-4. Each DFS identifies one SCC.
+3. Process vertices in decreasing order of finishing time.
+4. Perform DFS on the transpose graph from each unvisited vertex.
+5. Each DFS traversal identifies one strongly connected component.
 
-**Complexity:**
+### Pseudocode
 
-\[
-O(V+E)
-\]
+```text
+KOSARAJU(G)
+    create empty stack S
+    mark all vertices as unvisited
+
+    for each vertex u in V
+        if u is not visited
+            DFS-ORDER(G, u, S)
+
+    GT = transpose of G
+    mark all vertices as unvisited
+
+    while S is not empty
+        u = pop(S)
+
+        if u is not visited
+            DFS(GT, u)
+            report one strongly connected component
+
+DFS-ORDER(G, u, S)
+    mark u as visited
+
+    for each neighbour v of u
+        if v is not visited
+            DFS-ORDER(G, v, S)
+
+    push u onto S
+```
+
+### Complexity Analysis
+
+$$
+\boxed{T(V,E)=O(V+E)}
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
 
 ---
 
 # 4. Testing Bipartiteness
 
-A graph is **bipartite** if its vertices can be divided into two disjoint sets such that no edge connects two vertices belonging to the same set.
+A graph is **Bipartite** if its vertices can be divided into two disjoint sets such that no edge connects two vertices belonging to the same set.
 
 Let the two sets be:
 
-\[
+$$
 V=V_1\cup V_2
-\]
+$$
 
 Where:
 
-\[
+$$
 V_1\cap V_2=\emptyset
-\]
+$$
 
-Every edge must connect a vertex in \(V_1\) to one in \(V_2\).
+Every edge must connect a vertex in $V_1$ to a vertex in $V_2$.
 
-### Important Theorem
+## 4.1 Important Theorem
 
 An undirected graph is bipartite if and only if it contains no odd-length cycle.
 
@@ -903,21 +1802,27 @@ Examples:
 
 - A tree is always bipartite.
 - A graph containing a triangle is not bipartite.
-- A graph containing an even-length cycle can be bipartite.
+- An even-length cycle is bipartite.
 
-### BFS-Based Bipartiteness Test
+An isolated vertex is also bipartite.
+
+## 4.2 BFS-Based Bipartiteness Test
 
 The algorithm assigns one of two colours to each vertex.
 
 Adjacent vertices must always have different colours.
 
+### Algorithm
+
 ```text
 IS-BIPARTITE(G)
-    initialize color[v] = UNCOLORED for all vertices
+    initialize color[v] = UNCOLORED for every vertex
 
     for each vertex s in V
         if color[s] == UNCOLORED
             color[s] = 0
+
+            create an empty queue Q
             enqueue(Q, s)
 
             while Q is not empty
@@ -934,10 +1839,28 @@ IS-BIPARTITE(G)
     return TRUE
 ```
 
+### Working
+
+1. Select an uncoloured vertex.
+2. Assign it colour 0.
+3. Assign all its uncoloured neighbours colour 1.
+4. Continue alternating colours level by level.
+5. If an edge connects two vertices of the same colour, the graph is not bipartite.
+6. Repeat for every disconnected component.
+
 ### Complexity Analysis
 
-- Time Complexity: \(O(V+E)\)
-- Space Complexity: \(O(V)\)
+Time Complexity:
+
+$$
+\boxed{O(V+E)}
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
 
 ### Key Observations
 
@@ -952,7 +1875,7 @@ IS-BIPARTITE(G)
 
 ## 5.1 Directed Acyclic Graph (DAG)
 
-A Directed Acyclic Graph is a directed graph that contains no directed cycles.
+A Directed Acyclic Graph (DAG) is a directed graph that contains no directed cycles.
 
 DAGs are particularly useful for representing dependencies and sequential tasks.
 
@@ -966,70 +1889,91 @@ DAGs are particularly useful for representing dependencies and sequential tasks.
 
 ## 5.2 Topological Ordering
 
-A topological ordering of a DAG is a linear ordering of its vertices such that for every directed edge:
+A Topological Ordering of a DAG is a linear ordering of its vertices such that for every directed edge:
 
-\[
+$$
 u\rightarrow v
-\]
+$$
 
-Vertex \(u\) appears before vertex \(v\).
+Vertex $u$ appears before vertex $v$.
 
 **Important:** A directed graph has a topological ordering if and only if it is acyclic.
 
 A DAG may have multiple valid topological orderings.
 
-### Method 1: DFS-Based Topological Sorting
+## 5.3 DFS-Based Topological Sorting
 
 The algorithm uses DFS finishing times.
 
+Vertices are added to the output after all their outgoing neighbours have been explored.
+
+### Algorithm
+
 ```text
-TOPOLOGICAL-SORT(G)
-    create an empty stack S
+TOPOLOGICAL-SORT-DFS(G)
+    initialize all vertices as unvisited
+    create empty stack S
 
     for each vertex u in V
         if u is not visited
             DFS-TOPOLOGICAL(u)
 
-    return S
+    return S in reverse finishing order
 
 DFS-TOPOLOGICAL(u)
     mark u as visited
 
     for each neighbour v of u
-        if v is not visited
+        if v is unvisited
             DFS-TOPOLOGICAL(v)
 
     push u onto S
 ```
 
-Vertices are pushed after all their outgoing neighbours have been explored.
+### Cycle Detection
 
-The resulting stack order is a topological ordering.
-
-To detect cycles during DFS, maintain three states:
+To detect directed cycles during DFS, maintain three vertex states:
 
 - WHITE: Unvisited.
 - GRAY: Currently being explored.
 - BLACK: Fully processed.
 
-An edge to a GRAY vertex indicates a directed cycle.
+An edge from the current vertex to a GRAY vertex indicates a directed cycle.
 
-### Method 2: Kahn's Algorithm
+### Complexity Analysis
 
-Kahn's algorithm uses the indegree of each vertex.
+Time:
 
-Indegree is the number of incoming edges to a vertex.
+$$
+O(V+E)
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
+
+## 5.4 Kahn's Algorithm
+
+Kahn's Algorithm uses the indegree of each vertex.
+
+The indegree of a vertex is the number of incoming edges.
+
+### Algorithm
 
 ```text
 KAHN-TOPOLOGICAL-SORT(G)
     calculate indegree of every vertex
 
+    create an empty queue Q
     enqueue all vertices with indegree 0
+
     result = empty list
 
     while Q is not empty
         u = dequeue(Q)
-        add u to result
+        append u to result
 
         for each neighbour v of u
             indegree[v] = indegree[v] - 1
@@ -1038,17 +1982,27 @@ KAHN-TOPOLOGICAL-SORT(G)
                 enqueue(Q, v)
 
     if size(result) != V
-        report cycle
+        report directed cycle
 
     return result
 ```
 
+### Working
+
+1. Calculate the indegree of every vertex.
+2. Insert all vertices having indegree zero into a queue.
+3. Remove a vertex from the queue and add it to the ordering.
+4. Remove its outgoing edges by decreasing the indegree of its neighbours.
+5. Insert any neighbour whose indegree becomes zero.
+6. Continue until the queue becomes empty.
+7. If fewer than $V$ vertices have been processed, the graph contains a directed cycle.
+
 ### Complexity Analysis
 
-| Approach | Time Complexity | Space Complexity |
+| Approach | Time Complexity | Auxiliary Space |
 |---|---|---|
-| DFS-Based | O(V + E) | O(V) |
-| Kahn's Algorithm | O(V + E) | O(V) |
+| DFS-Based | $O(V+E)$ | $O(V)$ |
+| Kahn's Algorithm | $O(V+E)$ | $O(V)$ |
 
 ---
 
@@ -1058,7 +2012,7 @@ A **Greedy Algorithm** is an algorithm design technique that constructs a soluti
 
 At each step, the algorithm selects the best available option according to a particular criterion, with the goal of obtaining a globally optimal solution.
 
-### General Greedy Structure
+## 6.1 General Greedy Structure
 
 ```text
 GREEDY-ALGORITHM(problem)
@@ -1073,47 +2027,48 @@ GREEDY-ALGORITHM(problem)
     return solution
 ```
 
-### Characteristics of Greedy Algorithms
+## 6.2 Characteristics of Greedy Algorithms
 
 1. Makes locally optimal decisions.
 2. Builds the solution incrementally.
 3. Usually does not reconsider previous decisions.
-4. Often offers efficient implementations.
-5. Does not guarantee optimal solutions for every optimization problem.
+4. Often provides efficient implementations.
+5. Does not guarantee an optimal solution for every optimization problem.
 
-## 6.1 Greedy Choice Property
+## 6.3 Greedy Choice Property
 
-A problem satisfies the greedy choice property if a globally optimal solution can be constructed by making a locally optimal choice at each step.
+A problem satisfies the Greedy Choice Property if a globally optimal solution can be constructed by making a locally optimal choice at each step.
 
-## 6.2 Optimal Substructure
+## 6.4 Optimal Substructure
 
-A problem has optimal substructure if an optimal solution contains optimal solutions to its subproblems.
+A problem has Optimal Substructure if an optimal solution contains optimal solutions to its subproblems.
 
 These two properties are important when establishing that a greedy algorithm is correct.
 
-### Greedy vs Dynamic Programming
+## 6.5 Greedy vs Dynamic Programming
 
 | Feature | Greedy | Dynamic Programming |
 |---|---|---|
-| Decision | Local optimum | Compares subproblem solutions |
+| Decision | Local optimum | Evaluates relevant subproblem alternatives |
 | Previous Decisions | Usually irreversible | Uses stored results |
-| Subproblems | May not explore alternatives | Systematically solves overlapping subproblems |
+| Subproblems | Does not necessarily explore all alternatives | Systematically solves required states |
 | Efficiency | Often simpler and faster | May require more memory |
-| Optimality | Requires proof | Depends on recurrence and state formulation |
+| Optimality | Requires greedy-choice proof | Requires a correct state and recurrence |
+| Examples | Fractional Knapsack, Interval Scheduling | 0/1 Knapsack, Weighted Interval Scheduling |
 
-### Correctness Techniques for Greedy Algorithms
+## 6.6 Correctness Techniques for Greedy Algorithms
 
-**1. Exchange Argument**
+### 1. Exchange Argument
 
 Show that an optimal solution can be transformed into one containing the greedy choice without making the solution worse.
 
-**2. Stays-Ahead Argument**
+### 2. Stays-Ahead Argument
 
 Show that after every step, the greedy solution is at least as good as any competing solution according to a suitable measure.
 
-**3. Cut Property**
+### 3. Cut Property
 
-Used in Minimum Spanning Tree algorithms to prove that selecting a minimum-weight edge crossing a suitable cut is safe.
+Used in Minimum Spanning Tree algorithms to establish that selecting a minimum-weight edge crossing a suitable cut is a safe choice.
 
 **Important:** A locally optimal choice is not automatically globally optimal. Greedy algorithms require a correctness proof.
 
@@ -1127,26 +2082,28 @@ A **Spanning Tree** of a connected, undirected graph is a subgraph that:
 - Is connected.
 - Contains no cycles.
 
-For a graph with \(V\) vertices, every spanning tree contains exactly:
+For a graph with $V$ vertices, every spanning tree contains exactly:
 
-\[
-V-1 \text{ edges}
-\]
+$$
+\boxed{V-1\text{ edges}}
+$$
 
-## Minimum Spanning Tree (MST)
+## 7.1 Minimum Spanning Tree (MST)
 
 A Minimum Spanning Tree is a spanning tree having the minimum possible sum of edge weights.
 
 The total weight is:
 
-\[
+$$
 W(T)=\sum_{e\in T}w(e)
-\]
+$$
+
+Where $w(e)$ represents the weight of edge $e$.
 
 ### Important Properties
 
-- An MST contains exactly \(V-1\) edges.
-- It does not contain cycles.
+- An MST contains exactly $V-1$ edges.
+- It contains no cycles.
 - It connects all vertices with minimum total edge weight.
 - A connected graph can have multiple MSTs.
 - If all edge weights are distinct, the MST is unique.
@@ -1156,19 +2113,19 @@ Two major algorithms are used to find MSTs:
 1. Kruskal's Algorithm.
 2. Prim's Algorithm.
 
-## 7.1 Kruskal's Algorithm
+## 7.2 Kruskal's Algorithm
 
-Kruskal's algorithm constructs an MST by repeatedly selecting the minimum-weight edge that does not form a cycle.
+Kruskal's Algorithm constructs an MST by repeatedly selecting the minimum-weight edge that does not form a cycle.
 
 It uses the **Disjoint Set Union (DSU)** or Union-Find data structure.
 
 ### DSU Operations
 
-- **MAKE-SET(x):** Creates a separate set containing \(x\).
-- **FIND(x):** Finds the representative of the set containing \(x\).
-- **UNION(x,y):** Merges the sets containing \(x\) and \(y\).
+- **MAKE-SET(x):** Creates a separate set containing $x$.
+- **FIND(x):** Finds the representative of the set containing $x$.
+- **UNION(x,y):** Merges the sets containing $x$ and $y$.
 
-Path compression and union by rank/size make DSU operations extremely efficient.
+Path Compression and Union by Rank/Size make DSU operations extremely efficient.
 
 ### Algorithm
 
@@ -1186,6 +2143,9 @@ KRUSKAL(G)
             add (u, v) to MST
             UNION(u, v)
 
+        if size(MST) == V - 1
+            break
+
     return MST
 ```
 
@@ -1193,51 +2153,61 @@ KRUSKAL(G)
 
 Sorting the edges dominates the running time:
 
-\[
+$$
 O(E\log E)
-\]
+$$
 
-DSU operations contribute an almost-linear additional cost:
+DSU operations contribute:
 
-\[
+$$
 O(E\alpha(V))
-\]
+$$
+
+Where $\alpha(V)$ is the inverse Ackermann function, which grows extremely slowly.
 
 Therefore:
 
-\[
+$$
 \boxed{O(E\log E)}
-\]
+$$
 
-Where \(\alpha(V)\) is the inverse Ackermann function, which grows extremely slowly.
+For a connected graph, Kruskal's Algorithm produces an MST.
 
-**Properties:**
+For a disconnected graph, it produces a Minimum Spanning Forest.
+
+### Properties
+
 - Edge-based greedy algorithm.
 - Uses Union-Find to detect cycles.
-- Works particularly well for sparse graphs.
-- For disconnected graphs, it produces a minimum spanning forest rather than a spanning tree.
+- Often effective for sparse graphs.
+- Builds the spanning tree by selecting globally smallest eligible edges.
 
-## 7.2 Prim's Algorithm
+## 7.3 Prim's Algorithm
 
-Prim's algorithm constructs an MST by starting from an arbitrary vertex and repeatedly adding the minimum-weight edge connecting the current tree to a vertex outside it.
+Prim's Algorithm constructs an MST by starting from an arbitrary vertex and repeatedly adding the minimum-weight edge connecting the current tree to a vertex outside it.
 
 ### Algorithm
 
 ```text
 PRIM(G, source)
-    key[v] = INFINITY for every vertex
-    parent[v] = NIL for every vertex
+    for each vertex v in V
+        key[v] = INFINITY
+        parent[v] = NIL
 
     key[source] = 0
+
     insert all vertices into a min-priority queue
 
     while priority queue is not empty
         u = EXTRACT-MIN()
 
         for each neighbour v of u
-            if v is still in queue and weight(u,v) < key[v]
+            if v is still in the queue
+               and weight(u,v) < key[v]
+
                 parent[v] = u
                 key[v] = weight(u,v)
+
                 DECREASE-KEY(v, key[v])
 
     return parent
@@ -1247,33 +2217,40 @@ PRIM(G, source)
 
 | Implementation | Time Complexity |
 |---|---|
-| Adjacency Matrix | O(V²) |
-| Adjacency List + Binary Heap | O((V + E) log V) |
-| Adjacency List + Fibonacci Heap | O(E + V log V) |
+| Adjacency Matrix | $O(V^2)$ |
+| Adjacency List + Binary Heap | $O((V+E)\log V)$ |
+| Adjacency List + Fibonacci Heap | $O(E+V\log V)$ |
 
 **Properties:**
+
 - Vertex-based greedy algorithm.
 - Maintains one growing MST.
 - Uses a minimum-priority queue in efficient implementations.
-- Particularly useful for dense graphs with matrix implementation.
+- Often particularly useful for dense graphs when implemented using an adjacency matrix.
 
-### Kruskal vs Prim
+For disconnected graphs, Prim's algorithm can be restarted from each unvisited vertex to construct a Minimum Spanning Forest.
+
+## 7.4 Kruskal vs Prim
 
 | Feature | Kruskal | Prim |
 |---|---|---|
-| Approach | Selects minimum edges globally | Grows one tree |
-| Data Structure | DSU | Priority Queue |
+| Approach | Selects minimum eligible edges globally | Grows one tree |
+| Data Structure | Disjoint Set Union | Priority Queue |
 | Main Operation | Union-Find | Extract-Min / Decrease-Key |
-| Complexity | O(E log E) | O((V+E) log V) with binary heap |
-| Suitable For | Sparse graphs | Often effective for dense graphs |
+| Complexity | $O(E\log E)$ | $O((V+E)\log V)$ with binary heap |
+| Suitable For | Often sparse graphs | Often effective for dense graphs |
 
-### Important MST Properties
+## 7.5 Important MST Properties
 
-**Cut Property:**
+### Cut Property
 
-For a cut of a connected weighted graph, a minimum-weight edge crossing that cut is safe to include in some MST.
+A cut divides the vertices of a graph into two disjoint sets.
 
-**Cycle Property:**
+A minimum-weight edge crossing a cut is safe to include in some MST, provided the edge is a minimum-weight edge crossing that cut.
+
+If the minimum crossing edge is unique, it belongs to every MST.
+
+### Cycle Property
 
 If an edge is the unique maximum-weight edge in a cycle, it cannot belong to any MST.
 
@@ -1283,17 +2260,17 @@ If an edge is the unique maximum-weight edge in a cycle, it cannot belong to any
 
 A Shortest Path Problem asks us to find a path between two vertices such that the sum of edge weights along the path is minimized.
 
-For a path \(P\):
+For a path $P$:
 
-\[
+$$
 w(P)=\sum_{e\in P}w(e)
-\]
+$$
 
 ### Types of Shortest Path Problems
 
-1. Single-Source Shortest Path: Shortest paths from one source to all other vertices.
-2. Single-Pair Shortest Path: Shortest path between two specified vertices.
-3. All-Pairs Shortest Path: Shortest paths between every pair of vertices.
+1. **Single-Source Shortest Path:** Shortest paths from one source to all other vertices.
+2. **Single-Pair Shortest Path:** Shortest path between two specified vertices.
+3. **All-Pairs Shortest Path:** Shortest paths between every pair of vertices.
 
 Different algorithms are suitable for different graph conditions.
 
@@ -1303,12 +2280,14 @@ For an unweighted graph, BFS finds the shortest path in terms of the number of e
 
 **Complexity:**
 
-- Time: \(O(V+E)\)
-- Space: \(O(V)\)
+- Time: $O(V+E)$
+- Auxiliary Space: $O(V)$
+
+**Important:** BFS can also be used when every edge has the same positive weight, since minimizing the number of edges also minimizes the total path weight.
 
 ## 8.2 Dijkstra's Algorithm
 
-Dijkstra's algorithm finds shortest paths from a single source to all other vertices in a graph with **non-negative edge weights**.
+Dijkstra's Algorithm finds shortest paths from a single source to all other vertices in a graph with non-negative edge weights.
 
 It uses a greedy approach and a minimum-priority queue.
 
@@ -1316,52 +2295,64 @@ It uses a greedy approach and a minimum-priority queue.
 
 Relaxation is the process of checking whether a shorter path to a vertex can be found through another vertex.
 
-For an edge \(u\rightarrow v\):
+For an edge $u\rightarrow v$ with weight $w(u,v)$:
 
-\[
-\text{if }d[u]+w(u,v)<d[v]
-\]
+If:
+
+$$
+d[u]+w(u,v)<d[v]
+$$
 
 Update:
 
-\[
+$$
 d[v]=d[u]+w(u,v)
-\]
+$$
 
 ### Algorithm
 
 ```text
 DIJKSTRA(G, source)
-    dist[v] = INFINITY for all vertices
+    for each vertex v in V
+        dist[v] = INFINITY
+        parent[v] = NIL
+
     dist[source] = 0
 
-    insert source into a min-priority queue
+    create a min-priority queue Q
+    insert (0, source) into Q
 
-    while priority queue is not empty
-        u = EXTRACT-MIN()
+    while Q is not empty
+        (du, u) = EXTRACT-MIN(Q)
+
+        if du != dist[u]
+            continue
 
         for each edge (u, v) with weight w
             if dist[u] + w < dist[v]
                 dist[v] = dist[u] + w
                 parent[v] = u
-                update priority queue
 
-    return dist
+                insert (dist[v], v) into Q
+
+    return dist, parent
 ```
 
 ### Complexity Analysis
 
 | Implementation | Time Complexity |
 |---|---|
-| Array / Adjacency Matrix | O(V²) |
-| Binary Heap + Adjacency List | O((V + E) log V) |
-| Fibonacci Heap | O(E + V log V) |
+| Array / Adjacency Matrix | $O(V^2)$ |
+| Binary Heap + Adjacency List | $O((V+E)\log V)$ |
+| Fibonacci Heap | $O(E+V\log V)$ |
 
-**Properties:**
+### Properties
+
 - Greedy algorithm.
 - Requires non-negative edge weights.
 - Does not work correctly in general when negative-weight edges are present.
 - Can reconstruct shortest paths using parent pointers.
+- Computes shortest distances only for vertices reachable from the source; unreachable vertices retain distance $\infty$.
 
 ## 8.3 Bellman-Ford Algorithm
 
@@ -1371,42 +2362,64 @@ It can also detect reachable negative-weight cycles.
 
 ### Main Idea
 
-A shortest simple path contains at most \(V-1\) edges.
+A shortest path without repeated vertices contains at most $V-1$ edges.
 
-Therefore, repeatedly relaxing every edge \(V-1\) times is sufficient to find shortest distances when no relevant negative cycle exists.
+Therefore, repeatedly relaxing every edge $V-1$ times is sufficient to calculate shortest distances when no reachable negative-weight cycle exists.
 
 ### Algorithm
 
 ```text
 BELLMAN-FORD(G, source)
-    dist[v] = INFINITY for all vertices
+    for each vertex v in V
+        dist[v] = INFINITY
+        parent[v] = NIL
+
     dist[source] = 0
 
     repeat V-1 times
+        changed = false
+
         for each edge (u, v) with weight w
             if dist[u] != INFINITY
                and dist[u] + w < dist[v]
+
                 dist[v] = dist[u] + w
                 parent[v] = u
+                changed = true
+
+        if changed == false
+            break
 
     for each edge (u, v) with weight w
         if dist[u] != INFINITY
            and dist[u] + w < dist[v]
+
             report reachable negative-weight cycle
 
-    return dist
+    return dist, parent
 ```
 
 ### Complexity Analysis
 
-- Time: \(O(VE)\)
-- Space: \(O(V)\), excluding graph storage.
+Time Complexity:
 
-**Properties:**
+$$
+\boxed{O(VE)}
+$$
+
+Auxiliary Space:
+
+$$
+O(V)
+$$
+
+### Properties
+
 - Handles negative edge weights.
 - Detects reachable negative-weight cycles.
-- Slower than Dijkstra's algorithm in typical implementations.
-- A negative cycle makes shortest-path distances undefined for vertices reachable from that cycle.
+- Generally slower than Dijkstra's algorithm.
+- A reachable negative-weight cycle means that shortest-path distances are undefined for vertices reachable from that cycle.
+- A negative cycle that cannot be reached from the source does not affect the source's shortest-path results.
 
 ## 8.4 Shortest Paths in DAGs
 
@@ -1419,22 +2432,63 @@ A DAG permits efficient shortest-path computation even when some edge weights ar
 3. Process vertices in topological order.
 4. Relax all outgoing edges of each vertex.
 
-### Complexity
+### Algorithm
 
-\[
+```text
+DAG-SHORTEST-PATH(G, source)
+    order = TOPOLOGICAL-SORT(G)
+
+    for each vertex v in V
+        dist[v] = INFINITY
+        parent[v] = NIL
+
+    dist[source] = 0
+
+    for each vertex u in order
+        if dist[u] != INFINITY
+            for each edge (u, v) with weight w
+                if dist[u] + w < dist[v]
+                    dist[v] = dist[u] + w
+                    parent[v] = u
+
+    return dist, parent
+```
+
+### Complexity Analysis
+
+Topological Sorting:
+
+$$
+O(V+E)
+$$
+
+Relaxing All Edges:
+
+$$
+O(V+E)
+$$
+
+Total:
+
+$$
 \boxed{O(V+E)}
-\]
+$$
 
-This is often more efficient than Bellman-Ford when the graph is acyclic.
+### Important Properties
 
-### Algorithm Comparison
+- Supports negative edge weights.
+- DAGs cannot contain directed cycles.
+- More efficient than Bellman-Ford for acyclic graphs.
+- Can compute shortest paths even when edge weights are negative.
+
+## 8.5 Shortest Path Algorithm Comparison
 
 | Algorithm | Negative Edges | Negative Cycle Detection | Time Complexity |
 |---|---|---|---|
-| BFS | Not applicable to weighted edges | No | O(V+E) |
-| Dijkstra | No | No | O((V+E) log V) |
-| Bellman-Ford | Yes | Yes | O(VE) |
-| DAG Shortest Path | Yes | Not required for a DAG | O(V+E) |
+| BFS | Not applicable to general weighted edges | No | $O(V+E)$ |
+| Dijkstra | No | No | $O((V+E)\log V)$ |
+| Bellman-Ford | Yes | Yes, if reachable from source | $O(VE)$ |
+| DAG Shortest Path | Yes | Not required for a DAG | $O(V+E)$ |
 
 ---
 
@@ -1444,18 +2498,22 @@ The Interval Scheduling Problem involves selecting the maximum number of mutuall
 
 Each interval has:
 
-- Start time \(s_i\)
-- Finish time \(f_i\)
+- Start time $s_i$.
+- Finish time $f_i$.
 
 Two intervals are compatible if they do not overlap.
 
-For intervals where one ends exactly when another begins, compatibility is usually defined as:
+Using the standard convention of half-open intervals $[s_i,f_i)$, compatibility is defined as:
 
-\[
+$$
 f_i\leq s_j
-\]
+$$
 
-### Greedy Strategy: Earliest Finish Time
+### Objective
+
+Select the maximum number of mutually compatible intervals.
+
+## 9.1 Greedy Strategy: Earliest Finish Time
 
 The optimal greedy strategy is to repeatedly select the compatible interval that finishes earliest.
 
@@ -1476,9 +2534,9 @@ INTERVAL-SCHEDULING(intervals)
     return selected
 ```
 
-### Example
+## 9.2 Example
 
-Consider these intervals:
+Consider the following intervals:
 
 | Interval | Start | Finish |
 |---|---:|---:|
@@ -1488,41 +2546,45 @@ Consider these intervals:
 | D | 5 | 7 |
 | E | 8 | 9 |
 
-Sorting by finish time and applying the greedy strategy selects:
+Sorting by finishing time and applying the greedy strategy selects:
 
-\[
+$$
 A\rightarrow D\rightarrow E
-\]
+$$
 
-The maximum number of compatible intervals is 3.
+The maximum number of compatible intervals is:
 
-### Complexity Analysis
+$$
+\boxed{3}
+$$
+
+## 9.3 Complexity Analysis
 
 Sorting:
 
-\[
+$$
 O(n\log n)
-\]
+$$
 
 Selection:
 
-\[
+$$
 O(n)
-\]
+$$
 
 Total:
 
-\[
+$$
 \boxed{O(n\log n)}
-\]
+$$
 
 If the intervals are already sorted by finishing time:
 
-\[
-O(n)
-\]
+$$
+\boxed{O(n)}
+$$
 
-### Correctness: Exchange Argument
+## 9.4 Correctness: Exchange Argument
 
 Consider an optimal solution whose first selected interval is not the earliest-finishing interval.
 
@@ -1532,9 +2594,16 @@ Since the greedy interval finishes no later than the original first interval, al
 
 Thus, there exists an optimal solution containing the greedy choice.
 
-Repeating the argument establishes optimality.
+After selecting this interval, the remaining problem is another interval scheduling problem involving only compatible intervals.
 
-**Important:** Sorting by earliest starting time or shortest interval length is not generally optimal for this problem.
+Repeating the argument establishes that the greedy strategy produces an optimal solution.
+
+### Important Observations
+
+- The earliest-finishing-time strategy maximizes the number of compatible intervals.
+- Choosing the earliest starting time is not generally optimal.
+- Choosing the shortest interval is not generally optimal.
+- Weighted Interval Scheduling is a different problem and generally requires Dynamic Programming.
 
 ---
 
@@ -1544,41 +2613,47 @@ The Fractional Knapsack Problem involves selecting items with different values a
 
 Unlike the 0/1 Knapsack Problem, items can be divided into fractions.
 
-### Given
+## 10.1 Problem Definition
 
-For each item \(i\):
+For each item $i$:
 
-- Value: \(v_i\)
-- Weight: \(w_i\)
-- Knapsack capacity: \(W\)
+- $v_i$ = Value of item $i$.
+- $w_i$ = Weight of item $i$.
+- $W$ = Maximum knapsack capacity.
 
 The objective is:
 
-\[
+$$
 \max\sum_{i=1}^{n}v_ix_i
-\]
+$$
 
 Subject to:
 
-\[
+$$
 \sum_{i=1}^{n}w_ix_i\leq W
-\]
+$$
 
 Where:
 
-\[
-0\leq x_i\leq 1
-\]
+$$
+0\leq x_i\leq1
+$$
 
-### Greedy Strategy
+Here, $x_i$ represents the fraction of item $i$ selected.
+
+## 10.2 Greedy Strategy
 
 Select items in decreasing order of their value-to-weight ratio.
 
-\[
-r_i=\frac{v_i}{w_i}
-\]
+Define:
+
+$$
+\boxed{r_i=\frac{v_i}{w_i}}
+$$
 
 The item with the highest value per unit weight is selected first.
+
+Assume item weights are positive.
 
 ### Algorithm
 
@@ -1591,20 +2666,30 @@ FRACTIONAL-KNAPSACK(items, W)
     for each item i
         if weight[i] <= W
             take the entire item
+
             W = W - weight[i]
             totalValue = totalValue + value[i]
 
         else
             fraction = W / weight[i]
-            totalValue = totalValue + fraction * value[i]
+
+            totalValue = totalValue
+                         + fraction * value[i]
+
             break
 
     return totalValue
 ```
 
-### Example
+## 10.3 Example
 
-Suppose the knapsack capacity is 50 units.
+Suppose the knapsack capacity is:
+
+$$
+W=50
+$$
+
+Consider the following items:
 
 | Item | Value | Weight | Value/Weight |
 |---|---:|---:|---:|
@@ -1612,47 +2697,102 @@ Suppose the knapsack capacity is 50 units.
 | B | 100 | 20 | 5 |
 | C | 120 | 30 | 4 |
 
-Selection:
+### Selection
 
-- Take all of A: Weight = 10, Value = 60.
-- Take all of B: Weight = 20, Value = 100.
-- Remaining capacity = 20.
-- Take \(20/30\) of C: Value = 80.
+**Step 1:** Take all of item A.
+
+$$
+W=50-10=40
+$$
+
+Value obtained:
+
+$$
+60
+$$
+
+**Step 2:** Take all of item B.
+
+$$
+W=40-20=20
+$$
 
 Total value:
 
-\[
-60+100+80=\boxed{240}
-\]
+$$
+60+100=160
+$$
 
-### Complexity Analysis
+**Step 3:** Only 20 units of capacity remain.
+
+Take a fraction of item C:
+
+$$
+x_C=\frac{20}{30}=\frac{2}{3}
+$$
+
+Value obtained from item C:
+
+$$
+120\cdot\frac{2}{3}=80
+$$
+
+Total value:
+
+$$
+60+100+80=\boxed{240}
+$$
+
+## 10.4 Complexity Analysis
 
 Sorting:
 
-\[
+$$
 O(n\log n)
-\]
+$$
 
 Selecting items:
 
-\[
+$$
 O(n)
-\]
+$$
 
 Total:
 
-\[
+$$
 \boxed{O(n\log n)}
-\]
+$$
 
-### Fractional vs 0/1 Knapsack
+Auxiliary Space:
+
+$$
+O(n)
+$$
+
+For an in-place sorting implementation, auxiliary sorting space may be lower depending on the sorting algorithm.
+
+## 10.5 Correctness Argument
+
+Suppose an optimal solution does not select the available item having the highest value-to-weight ratio.
+
+If it contains a positive amount of a lower-ratio item while some capacity could instead be assigned to a higher-ratio item, replace that amount with an equal weight of the higher-ratio item.
+
+The total weight remains unchanged, while the total value increases.
+
+This contradicts the assumption that the original solution was optimal.
+
+Therefore, selecting the highest value-to-weight ratio first is a safe greedy choice.
+
+Repeating this process establishes the optimality of the greedy algorithm.
+
+## 10.6 Fractional vs 0/1 Knapsack
 
 | Feature | Fractional Knapsack | 0/1 Knapsack |
 |---|---|---|
 | Items Divisible? | Yes | No |
 | Greedy by Value/Weight | Optimal | Not generally optimal |
 | Common Approach | Greedy | Dynamic Programming |
-| Typical DP Complexity | Not required | O(nW) |
+| Typical Complexity | $O(n\log n)$ | $O(nW)$ using DP |
 | Nature | Continuous choices | Discrete choices |
 
 **Important:** The value-to-weight greedy strategy is optimal for Fractional Knapsack, but it does not always produce an optimal solution for 0/1 Knapsack.
@@ -1663,235 +2803,77 @@ Total:
 
 Time complexity measures how an algorithm's running time grows with input size.
 
-The main purpose is to understand the scalability of an algorithm.
+For graph algorithms, complexity depends mainly on the number of vertices, edges, and the chosen graph representation.
+
+For greedy algorithms, complexity often depends on sorting and candidate-selection operations.
 
 ## 11.1 Graph Algorithm Complexity
 
-For adjacency-list representations:
+The following complexities assume adjacency-list representations unless specified otherwise.
 
-| Algorithm | Time Complexity |
-|---|---|
-| BFS | O(V + E) |
-| DFS | O(V + E) |
-| Connected Components | O(V + E) |
-| Bipartiteness Testing | O(V + E) |
-| Topological Sorting | O(V + E) |
-| Kosaraju's SCC Algorithm | O(V + E) |
-| Kruskal's MST | O(E log E) |
-| Prim's MST (Binary Heap) | O((V + E) log V) |
-| Dijkstra (Binary Heap) | O((V + E) log V) |
-| Bellman-Ford | O(VE) |
-| DAG Shortest Path | O(V + E) |
+| Algorithm | Time Complexity | Auxiliary Space |
+|---|---|---|
+| BFS | $O(V+E)$ | $O(V)$ |
+| DFS | $O(V+E)$ | $O(V)$ |
+| Connected Components | $O(V+E)$ | $O(V)$ |
+| Bipartiteness Testing | $O(V+E)$ | $O(V)$ |
+| Topological Sorting (DFS) | $O(V+E)$ | $O(V)$ |
+| Topological Sorting (Kahn) | $O(V+E)$ | $O(V)$ |
+| Kosaraju's SCC Algorithm | $O(V+E)$ | $O(V)$ |
+| Kruskal's MST | $O(E\log E)$ | $O(V+E)$ |
+| Prim's MST (Binary Heap) | $O((V+E)\log V)$ | $O(V+E)$ |
+| Dijkstra (Binary Heap) | $O((V+E)\log V)$ | $O(V+E)$ |
+| Bellman-Ford | $O(VE)$ | $O(V)$ |
+| DAG Shortest Path | $O(V+E)$ | $O(V)$ |
 
 ## 11.2 Greedy Algorithm Complexity
 
 | Problem | Main Operation | Time Complexity |
 |---|---|---|
-| Interval Scheduling | Sorting by finish time | O(n log n) |
-| Fractional Knapsack | Sorting by value/weight ratio | O(n log n) |
-| Kruskal's MST | Sorting edges | O(E log E) |
-| Prim's MST | Priority queue operations | O((V + E) log V) |
-| Dijkstra's Algorithm | Priority queue operations | O((V + E) log V) |
+| Interval Scheduling | Sorting by finish time | $O(n\log n)$ |
+| Fractional Knapsack | Sorting by value/weight ratio | $O(n\log n)$ |
+| Kruskal's MST | Sorting edges | $O(E\log E)$ |
+| Prim's MST | Priority queue operations | $O((V+E)\log V)$ |
+| Dijkstra's Algorithm | Priority queue operations | $O((V+E)\log V)$ |
 
 ## 11.3 Important Complexity Analysis Rules
 
-**1. Sequential Operations**
+### 1. Sequential Operations
 
 For two sequential operations:
 
-\[
+$$
 T(n)=O(f(n))+O(g(n))
-\]
+$$
 
-The dominant term determines the asymptotic complexity.
+The dominant asymptotic term determines the overall complexity.
 
-**2. Nested Loops**
+For example:
 
-If two loops each execute \(n\) times:
+$$
+T(n)=O(n^2)+O(n)
+$$
 
-\[
+Therefore:
+
+$$
 T(n)=O(n^2)
-\]
+$$
 
-**3. Sorting-Based Algorithms**
+### 2. Nested Loops
+
+If two nested loops each execute $n$ times:
+
+$$
+T(n)=O(n^2)
+$$
+
+### 3. Sorting-Based Algorithms
 
 When an algorithm sorts its input before processing:
 
-\[
+$$
 T(n)=O(n\log n)+O(n)
-\]
-
-Therefore:
-
-\[
-T(n)=O(n\log n)
-\]
-
-**4. Graph Traversal**
-
-With adjacency lists, every vertex is processed once and every edge is examined a constant number of times.
-
-\[
-T(V,E)=O(V+E)
-\]
-
-**5. Priority Queue Operations**
-
-For a binary heap:
-
-- Insert: \(O(\log n)\)
-- Extract-Min: \(O(\log n)\)
-- Decrease-Key: \(O(\log n)\)
-- Peek-Min: \(O(1)\)
-
----
-
-# 12. Algorithm Complexity Cheat Sheet
-
-## Graph Traversal and Connectivity
-
-| Algorithm | Time | Auxiliary Space |
-|---|---|---|
-| BFS | O(V + E) | O(V) |
-| DFS | O(V + E) | O(V) |
-| Connected Components | O(V + E) | O(V) |
-| Bipartiteness Test | O(V + E) | O(V) |
-| Topological Sort | O(V + E) | O(V) |
-| Kosaraju's Algorithm | O(V + E) | O(V) |
-
-## Minimum Spanning Tree
-
-| Algorithm | Time Complexity | Main Data Structure |
-|---|---|---|
-| Kruskal | O(E log E) | Disjoint Set Union |
-| Prim (Matrix) | O(V²) | Array / Matrix |
-| Prim (Binary Heap) | O((V + E) log V) | Priority Queue |
-
-## Shortest Path
-
-| Algorithm | Time Complexity | Main Constraint |
-|---|---|---|
-| BFS | O(V + E) | Unweighted graph |
-| Dijkstra | O((V + E) log V) | Non-negative weights |
-| Bellman-Ford | O(VE) | Handles negative weights |
-| DAG Shortest Path | O(V + E) | Directed acyclic graph |
-
-## Greedy Optimization Problems
-
-| Problem | Greedy Strategy | Time Complexity |
-|---|---|---|
-| Interval Scheduling | Earliest finishing time | O(n log n) |
-| Fractional Knapsack | Highest value/weight ratio | O(n log n) |
-| Kruskal's MST | Minimum safe edge | O(E log E) |
-| Prim's MST | Minimum edge crossing the current tree cut | O((V + E) log V) |
-
----
-
-## Key Takeaways
-
-1. BFS explores graphs level by level using a queue.
-2. DFS explores deeply using recursion or an explicit stack.
-3. BFS and DFS both run in \(O(V+E)\) time with adjacency lists.
-4. A connected component is a maximal connected subgraph.
-5. An undirected graph is bipartite if and only if it has no odd-length cycle.
-6. Every DAG has at least one topological ordering.
-7. Greedy algorithms make locally optimal choices and require correctness proofs.
-8. Kruskal's and Prim's algorithms solve the Minimum Spanning Tree problem.
-9. Dijkstra's algorithm requires non-negative edge weights.
-10. Bellman-Ford supports negative edges and detects reachable negative-weight cycles.
-11. Shortest paths in a DAG can be found in linear time.
-12. Interval Scheduling uses the earliest-finish-time strategy.
-13. Fractional Knapsack uses the maximum value-to-weight ratio.
-14. Greedy strategies are not universally optimal; Fractional and 0/1 Knapsack illustrate this distinction.
-15. Always derive time complexity by examining the dominant operations and chosen data structures.
-
----
-
-**End of Unit 2 — Graph Algorithms & Greedy Algorithms**
-
-*These notes serve as a quick-reference guide for graph theory, traversal algorithms, greedy optimization, correctness arguments, and asymptotic complexity analysis.*
-
-Two commonly studied schemes:
-
-- **Lomuto Partition:** Typically uses the last element as pivot.
-- **Hoare Partition:** Uses two pointers moving inward from opposite ends.
-
----
-
-# 10. Randomized Quick Sort
-
-Randomized Quick Sort improves Quick Sort by selecting the pivot randomly rather than deterministically.
-
-### Working
-
-1. Randomly select a pivot from the current subarray.
-2. Exchange it with the chosen pivot position.
-3. Partition the array.
-4. Recursively sort the resulting partitions.
-
-### Complexity Analysis
-
-| Case | Time Complexity |
-|---|---|
-| Expected | O(n log n) |
-| Worst | O(n²) |
-| Expected Auxiliary Space | O(log n) |
-
-### Key Observations
-
-- Random pivot selection reduces dependence on the original input arrangement.
-- Expected running time is \(O(n\log n)\).
-- Worst-case running time remains \(O(n^2)\).
-- Randomization provides expected performance, not a guaranteed worst-case bound.
-
----
-
-# 11. Maximum Subarray Problem
-
-The Maximum Subarray Problem asks us to find a contiguous subarray with the maximum possible sum.
-
-Given an array:
-
-$$
-A=[-2,1,-3,4,-1,2,1,-5,4]
-$$
-
-The maximum-sum contiguous subarray is:
-
-$$
-[4,-1,2,1]
-$$
-
-Its sum is:
-
-$$
-4-1+2+1=6
-$$
-
-### Divide-and-Conquer Approach
-
-The maximum subarray must belong to one of three categories:
-
-1. Entirely in the left half.
-2. Entirely in the right half.
-3. Crossing the midpoint.
-
-Therefore:
-
-$$
-MAXIMUM-SUBARRAY =
-\max(L,R,C)
-$$
-
-Where:
-- $\(L\)$ = Maximum subarray sum in the left half.
-- $\(R\)$ = Maximum subarray sum in the right half.
-- $\(C\)$ = Maximum crossing subarray sum.
-
-### Recurrence Relation
-
-$$
-T(n)=2T(n/2)+O(n)
 $$
 
 Therefore:
@@ -1900,200 +2882,93 @@ $$
 \boxed{T(n)=O(n\log n)}
 $$
 
-### Kadane's Algorithm
+### 4. Graph Traversal
 
-An alternative linear-time approach maintains the best subarray ending at the current position.
-
-$$
-currentMax_i=\max(A_i,currentMax_{i-1}+A_i)
-$$
-
-$$
-globalMax_i=\max(globalMax_{i-1},currentMax_i)
-$$
-
-**Complexity:**
-
-| Approach | Time Complexity |
-|---|---|
-| Brute Force | O(n²) or O(n³), depending on implementation |
-| Divide and Conquer | O(n log n) |
-| Kadane's Algorithm | O(n) |
-
-**Important:** Kadane's algorithm also handles arrays containing entirely negative values when initialized correctly.
-
----
-
-# 12. Strassen's Matrix Multiplication
-
-Strassen's Algorithm is a divide-and-conquer algorithm that multiplies two matrices using seven recursive multiplications instead of the conventional eight.
-
-### Conventional Matrix Multiplication
-
-For two $$\(n \times n\)$$ matrices:
-
-$$
-T(n)=8T(n/2)+O(n^2)
-$$
+With adjacency lists, every vertex is processed once and every edge is examined a constant number of times.
 
 Therefore:
 
 $$
-T(n)=O(n^3)
+\boxed{T(V,E)=O(V+E)}
 $$
 
-### Strassen's Approach
+### 5. Priority Queue Operations
 
-Divide matrices \(A\) and \(B\) into four submatrices:
+For a Binary Heap:
 
-$$
-A=
-\begin{bmatrix}
-A_{11}&A_{12}\\
-A_{21}&A_{22}
-\end{bmatrix}
-$$
-
-$$
-B=
-\begin{bmatrix}
-B_{11}&B_{12}\\
-B_{21}&B_{22}
-\end{bmatrix}
-$$
-
-Compute seven products:
-
-$$
-M_1=(A_{11}+A_{22})(B_{11}+B_{22})
-$$
-
-$$
-M_2=(A_{21}+A_{22})B_{11}
-$$
-
-$$
-M_3=A_{11}(B_{12}-B_{22})
-$$
-
-$$
-M_4=A_{22}(B_{21}-B_{11})
-$$
-
-$$
-M_5=(A_{11}+A_{12})B_{22}
-$$
-
-$$
-M_6=(A_{21}-A_{11})(B_{11}+B_{12})
-$$
-
-$$
-M_7=(A_{12}-A_{22})(B_{21}+B_{22})
-$$
-
-### Construct the Result
-
-$$
-C_{11}=M_1+M_4-M_5+M_7
-$$
-
-$$
-C_{12}=M_3+M_5
-$$
-
-$$
-C_{21}=M_2+M_4
-$$
-
-$$
-C_{22}=M_1-M_2+M_3+M_6
-$$
-
-### Complexity Analysis
-
-The recurrence is:
-
-\[
-T(n)=7T(n/2)+O(n^2)
-\]
-
-Applying the Master Theorem:
-
-\[
-\boxed{T(n)=O(n^{\log_2 7})}
-\]
-
-\[
-\boxed{T(n)\approx O(n^{2.8074})}
-\]
-
-**Properties:**
-- Uses seven recursive multiplications.
-- Asymptotically faster than conventional matrix multiplication.
-- Requires additional additions and subtractions.
-- Often beneficial for sufficiently large matrices.
-- Practical performance depends on implementation and matrix size.
+| Operation | Time Complexity |
+|---|---|
+| Insert | $O(\log n)$ |
+| Extract-Min | $O(\log n)$ |
+| Decrease-Key | $O(\log n)$ |
+| Peek-Min | $O(1)$ |
 
 ---
 
-# 13. Algorithm Complexity Cheat Sheet
+# 12. Algorithm Complexity Cheat Sheet
 
-## Searching Algorithms
+## 12.1 Graph Traversal and Connectivity
 
-| Algorithm | Best | Average | Worst | Space |
-|---|---|---|---|---|
-| Linear Search | O(1) | O(n) | O(n) | O(1) |
-| Binary Search | O(1) | O(log n) | O(log n) | O(1) iterative |
-
-## Sorting Algorithms
-
-| Algorithm | Best | Average | Worst | Stable? | In-Place? |
-|---|---|---|---|---|---|
-| Insertion Sort | O(n) | O(n²) | O(n²) | Yes | Yes |
-| Selection Sort | O(n²) | O(n²) | O(n²) | No | Yes |
-| Bubble Sort | O(n) | O(n²) | O(n²) | Yes | Yes |
-| Heapsort | O(n log n) | O(n log n) | O(n log n) | No | Yes |
-| Merge Sort | O(n log n) | O(n log n) | O(n log n) | Yes | No (array version) |
-| Quick Sort | O(n log n) | O(n log n) | O(n²) | No | Usually |
-| Counting Sort | O(n+k) | O(n+k) | O(n+k) | Yes* | No |
-| Radix Sort | O(d(n+k)) | O(d(n+k)) | O(d(n+k)) | Yes* | No |
-
-*Stability of Counting Sort and Radix Sort depends on the implementation and the sorting procedure used at each digit.*
-
-## Important Divide-and-Conquer Recurrences
-
-| Algorithm | Recurrence | Complexity |
+| Algorithm | Time Complexity | Auxiliary Space |
 |---|---|---|
-| Binary Search | T(n) = T(n/2) + O(1) | O(log n) |
-| Merge Sort | T(n) = 2T(n/2) + O(n) | O(n log n) |
-| Quick Sort (Balanced) | T(n) = 2T(n/2) + O(n) | O(n log n) |
-| Quick Sort (Worst) | T(n) = T(n-1) + O(n) | O(n²) |
-| Maximum Subarray | T(n) = 2T(n/2) + O(n) | O(n log n) |
-| Strassen's Algorithm | T(n) = 7T(n/2) + O(n²) | O(n^2.807) |
+| BFS | $O(V+E)$ | $O(V)$ |
+| DFS | $O(V+E)$ | $O(V)$ |
+| Connected Components | $O(V+E)$ | $O(V)$ |
+| Bipartiteness Test | $O(V+E)$ | $O(V)$ |
+| Topological Sort | $O(V+E)$ | $O(V)$ |
+| Kosaraju's Algorithm | $O(V+E)$ | $O(V)$ |
+
+## 12.2 Minimum Spanning Tree
+
+| Algorithm | Time Complexity | Main Data Structure |
+|---|---|---|
+| Kruskal | $O(E\log E)$ | Disjoint Set Union |
+| Prim (Matrix) | $O(V^2)$ | Array / Matrix |
+| Prim (Binary Heap) | $O((V+E)\log V)$ | Priority Queue |
+
+## 12.3 Shortest Path
+
+| Algorithm | Time Complexity | Main Constraint |
+|---|---|---|
+| BFS | $O(V+E)$ | Unweighted graph |
+| Dijkstra | $O((V+E)\log V)$ | Non-negative edge weights |
+| Bellman-Ford | $O(VE)$ | Supports negative edges |
+| DAG Shortest Path | $O(V+E)$ | Directed Acyclic Graph |
+
+## 12.4 Greedy Optimization Problems
+
+| Problem | Greedy Strategy | Time Complexity |
+|---|---|---|
+| Interval Scheduling | Earliest finishing time | $O(n\log n)$ |
+| Fractional Knapsack | Highest value/weight ratio | $O(n\log n)$ |
+| Kruskal's MST | Minimum safe edge | $O(E\log E)$ |
+| Prim's MST | Minimum edge connecting the current tree to an outside vertex | $O((V+E)\log V)$ |
 
 ---
 
 ## Key Takeaways
 
-1. Always distinguish between best, average, and worst-case complexity.
-2. Binary Search requires sorted data.
-3. Insertion Sort is particularly efficient for small or nearly sorted arrays.
-4. Selection Sort minimizes the number of swaps among elementary comparison sorts.
-5. Heapsort guarantees \(O(n\log n)\) worst-case performance.
-6. Linear-time sorting algorithms rely on assumptions about input keys or distributions.
-7. Divide and Conquer follows the Divide → Conquer → Combine paradigm.
-8. Merge Sort guarantees \(O(n\log n)\) time and is stable.
-9. Quick Sort offers excellent expected performance but has an \(O(n^2)\) worst case.
-10. Randomization improves expected Quick Sort performance.
-11. Kadane's Algorithm solves the Maximum Subarray Problem in linear time.
-12. Strassen's Algorithm reduces matrix multiplication from eight recursive multiplications to seven.
+1. BFS explores graphs level by level using a queue.
+2. DFS explores deeply using recursion or an explicit stack.
+3. BFS and DFS both run in $O(V+E)$ time with adjacency lists.
+4. A connected component is a maximal connected subgraph of an undirected graph.
+5. An undirected graph is bipartite if and only if it contains no odd-length cycle.
+6. Every DAG has at least one topological ordering.
+7. Greedy algorithms make locally optimal choices and require correctness proofs.
+8. Kruskal's and Prim's algorithms solve the Minimum Spanning Tree problem.
+9. Dijkstra's algorithm requires non-negative edge weights.
+10. Bellman-Ford supports negative edges and detects reachable negative-weight cycles.
+11. Shortest paths in a DAG can be computed in linear time.
+12. Interval Scheduling uses the earliest-finish-time strategy.
+13. Fractional Knapsack uses the maximum value-to-weight ratio.
+14. Greedy strategies are not universally optimal; Fractional Knapsack and 0/1 Knapsack illustrate this distinction.
+15. Always derive time complexity by examining the dominant operations and chosen data structures.
 
 ---
 
-**End of Unit 1 — Design and Analysis of Algorithms**
+**End of Unit 2 — Graph Algorithms & Greedy Algorithms**
 
-*These notes serve as a quick-reference guide for algorithm design, implementation, correctness proofs, and asymptotic complexity analysis.*
+*These notes serve as a quick-reference guide for graph theory, traversal algorithms, greedy optimization, correctness proofs, and asymptotic complexity analysis.*
 
 # Unit 3 — Dynamic Programming
 
@@ -4477,23 +5352,3 @@ Hashing is used in techniques such as consistent hashing to distribute data acro
 
 *These notes serve as a quick-reference guide to hashing fundamentals, hash-function construction, collision-resolution techniques, and asymptotic complexity analysis.*
 
-Unit-04/
-│
-├── README.md
-│
-├── Hash-Functions/
-│   ├── DivisionMethod.cpp
-│   ├── MultiplicationMethod.cpp
-│   ├── MidSquareMethod.cpp
-│   └── FoldingMethod.cpp
-│
-├── Collision-Resolution/
-│   ├── SeparateChaining.cpp
-│   ├── LinearProbing.cpp
-│   ├── QuadraticProbing.cpp
-│   └── DoubleHashing.cpp
-│
-└── Applications/
-    ├── FrequencyCounter.cpp
-    ├── DuplicateDetection.cpp
-    └── TwoSum.cpp
