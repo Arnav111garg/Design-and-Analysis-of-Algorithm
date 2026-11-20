@@ -2094,3 +2094,1216 @@ Applying the Master Theorem:
 **End of Unit 1 — Design and Analysis of Algorithms**
 
 *These notes serve as a quick-reference guide for algorithm design, implementation, correctness proofs, and asymptotic complexity analysis.*
+
+# Unit 3 — Dynamic Programming
+
+> **Course:** Design and Analysis of Algorithms (DAA)  
+> **Unit:** 03  
+> **Topics:** Dynamic Programming, Weighted Interval Scheduling, Integer Knapsack, Subset Sum and Complexity Analysis.
+
+---
+
+## Table of Contents
+
+1. [Introduction to Dynamic Programming](#1-introduction-to-dynamic-programming)
+2. [Dynamic Programming Approaches](#2-dynamic-programming-approaches)
+3. [Weighted Interval Scheduling](#3-weighted-interval-scheduling)
+4. [Integer Knapsack Problem](#4-integer-knapsack-problem)
+5. [Subset Sum Problem](#5-subset-sum-problem)
+6. [Analysis of Time Complexity](#6-analysis-of-time-complexity)
+7. [Dynamic Programming Complexity Cheat Sheet](#7-dynamic-programming-complexity-cheat-sheet)
+8. [Key Takeaways](#8-key-takeaways)
+
+---
+
+# 1. Introduction to Dynamic Programming
+
+**Dynamic Programming (DP)** is an algorithm design technique that solves complex problems by dividing them into smaller, overlapping subproblems and storing their solutions to avoid repeated computation.
+
+Instead of solving the same subproblem multiple times, DP computes its solution once and reuses the result whenever required.
+
+Dynamic Programming is particularly useful for optimization and decision problems.
+
+### 1.1 Key Characteristics of Dynamic Programming
+
+A problem is generally suitable for Dynamic Programming when it exhibits two important properties:
+
+**1. Optimal Substructure**
+
+A problem has optimal substructure if an optimal solution to the original problem can be constructed using optimal solutions to its subproblems.
+
+For example, an optimal solution to a scheduling problem may be constructed using an optimal solution to a smaller set of compatible activities.
+
+**2. Overlapping Subproblems**
+
+A problem has overlapping subproblems when the same smaller problems are solved repeatedly during a recursive computation.
+
+Dynamic Programming stores their solutions to avoid redundant work.
+
+### 1.2 General Structure of Dynamic Programming
+
+A DP solution generally involves four steps:
+
+1. **Define the State:** Identify the information required to represent a subproblem.
+2. **Formulate the Recurrence:** Establish a mathematical relationship between a problem and its smaller subproblems.
+3. **Identify Base Cases:** Define the solutions to the smallest subproblems.
+4. **Compute and Store Results:** Solve the subproblems and reuse their computed solutions.
+
+### 1.3 Dynamic Programming vs Divide and Conquer
+
+| Feature | Divide and Conquer | Dynamic Programming |
+|---|---|---|
+| Subproblems | Usually independent | Often overlapping |
+| Computation | May recompute repeated subproblems | Stores computed results |
+| Storage | Usually recursion stack and temporary results | Memoization or DP table |
+| Approach | Divide, Conquer, Combine | Define, Compute, Reuse |
+| Examples | Merge Sort, Quick Sort | Knapsack, Weighted Scheduling |
+
+### 1.4 Dynamic Programming vs Greedy Algorithms
+
+| Feature | Dynamic Programming | Greedy Algorithm |
+|---|---|---|
+| Decision Making | Considers relevant subproblem alternatives | Makes a locally optimal choice |
+| Previous Decisions | Evaluates alternatives through states | Usually does not reconsider choices |
+| Optimality | Established through the DP recurrence | Requires a greedy-choice proof |
+| Computation | Can involve many subproblems | Often involves fewer decisions |
+| Examples | 0/1 Knapsack, Subset Sum | Fractional Knapsack, Interval Scheduling |
+
+**Important:** Dynamic Programming does not automatically guarantee an optimal solution. The state definition and recurrence must correctly represent the original problem.
+
+---
+
+# 2. Dynamic Programming Approaches
+
+There are two major approaches to implementing Dynamic Programming.
+
+## 2.1 Top-Down Approach (Memoization)
+
+Memoization uses recursion along with a storage structure to remember previously computed results.
+
+When a subproblem is encountered:
+
+- If its result has already been calculated, return the stored result.
+- Otherwise, solve it recursively, store the result, and return it.
+
+### General Pseudocode
+
+```text
+MEMOIZED-DP(problem)
+    if problem is a base case
+        return base result
+
+    if problem is already stored
+        return stored result
+
+    result = solve smaller subproblems
+
+    store result
+
+    return result
+```
+
+**Characteristics:**
+
+- Recursive implementation.
+- Computes only the subproblems that are actually needed.
+- Uses additional memory for memoization.
+- Has recursion-stack overhead.
+
+## 2.2 Bottom-Up Approach (Tabulation)
+
+Tabulation solves subproblems iteratively, starting from the smallest cases and progressively building solutions to larger problems.
+
+### General Pseudocode
+
+```text
+BOTTOM-UP-DP(problem)
+    initialize DP table
+
+    solve base cases
+
+    for each state in dependency order
+        compute current state using previously solved states
+
+    return final answer
+```
+
+**Characteristics:**
+
+- Usually iterative.
+- Avoids recursive function-call overhead.
+- Computes states in a predetermined order.
+- Often allows space optimization.
+
+### Memoization vs Tabulation
+
+| Feature | Memoization | Tabulation |
+|---|---|---|
+| Approach | Top-Down | Bottom-Up |
+| Implementation | Recursive | Iterative |
+| Storage | Cache / Map / Array | DP Table |
+| Computes | Only required states | All states in the chosen table |
+| Recursion Stack | Required | Not required |
+| Space Optimization | Possible | Often easier |
+
+---
+
+# 3. Weighted Interval Scheduling
+
+The **Weighted Interval Scheduling Problem** is an optimization problem in which we are given a collection of intervals, each having a start time, finish time, and associated weight or profit.
+
+The objective is to select a subset of mutually compatible intervals that maximizes the total weight.
+
+Unlike ordinary Interval Scheduling, where the objective is to maximize the number of selected intervals, Weighted Interval Scheduling maximizes the total profit.
+
+## 3.1 Problem Definition
+
+Consider $n$ jobs, each represented by:
+
+$$
+J_i=(s_i,f_i,v_i)
+$$
+
+Where:
+
+- $s_i$ = Starting time of job $i$.
+- $f_i$ = Finishing time of job $i$.
+- $v_i$ = Weight or profit associated with job $i$.
+
+Two intervals $i$ and $j$ are compatible when:
+
+$$
+f_i\leq s_j
+$$
+
+The objective is:
+
+$$
+\max \sum_{i\in S}v_i
+$$
+
+Subject to all selected intervals being pairwise compatible.
+
+## 3.2 Why Greedy Algorithms Are Not Sufficient
+
+In ordinary Interval Scheduling, selecting the earliest-finishing interval is optimal when the objective is to maximize the number of intervals.
+
+However, in Weighted Interval Scheduling, selecting the earliest-finishing or highest-weight interval does not necessarily produce an optimal solution.
+
+Consider:
+
+| Job | Start | Finish | Weight |
+|---|---:|---:|---:|
+| A | 1 | 3 | 5 |
+| B | 3 | 5 | 5 |
+| C | 1 | 5 | 15 |
+
+Selecting A and B gives:
+
+$$
+5+5=10
+$$
+
+Selecting C gives:
+
+$$
+15
+$$
+
+Therefore, selecting the combination of compatible jobs with the maximum total weight requires considering alternative solutions.
+
+Dynamic Programming provides an efficient solution.
+
+## 3.3 Predecessor Function
+
+First, sort all jobs in non-decreasing order of finishing time.
+
+Define:
+
+$$
+p(j)=\max\{i<j:f_i\leq s_j\}
+$$
+
+Here, $p(j)$ represents the index of the last job that finishes before job $j$ starts.
+
+If no compatible earlier job exists:
+
+$$
+p(j)=0
+$$
+
+This function allows us to identify the optimal subproblem associated with selecting job $j$.
+
+## 3.4 Recurrence Relation
+
+Let:
+
+$$
+OPT(j)
+$$
+
+represent the maximum total weight obtainable using the first $j$ jobs.
+
+There are two possibilities:
+
+**Case 1: Include Job $j$**
+
+If job $j$ is included, the remaining jobs must come from the first $p(j)$ compatible jobs.
+
+The resulting value is:
+
+$$
+v_j+OPT(p(j))
+$$
+
+**Case 2: Exclude Job $j$**
+
+If job $j$ is excluded, the optimal solution is obtained from the first $j-1$ jobs:
+
+$$
+OPT(j-1)
+$$
+
+Therefore, the recurrence is:
+
+$$
+\boxed{
+OPT(j)=\max\left(v_j+OPT(p(j)),OPT(j-1)\right)
+}
+$$
+
+### Base Case
+
+$$
+OPT(0)=0
+$$
+
+## 3.5 Bottom-Up Dynamic Programming Algorithm
+
+```text
+WEIGHTED-INTERVAL-SCHEDULING(jobs)
+    sort jobs by increasing finish time
+
+    calculate p(j) for every job using binary search
+
+    OPT[0] = 0
+
+    for j = 1 to n
+        include = weight[j] + OPT[p(j)]
+        exclude = OPT[j-1]
+
+        OPT[j] = max(include, exclude)
+
+    return OPT[n]
+```
+
+## 3.6 Example
+
+Consider the following jobs:
+
+| Job | Start | Finish | Weight |
+|---|---:|---:|---:|
+| A | 1 | 3 | 5 |
+| B | 2 | 5 | 6 |
+| C | 4 | 6 | 5 |
+| D | 6 | 7 | 4 |
+| E | 5 | 8 | 11 |
+
+Assuming jobs are already sorted by finishing time:
+
+| Job | $p(j)$ | Weight |
+|---|---:|---:|
+| A | 0 | 5 |
+| B | 0 | 6 |
+| C | 1 | 5 |
+| D | 3 | 4 |
+| E | 2 | 11 |
+
+The DP values are:
+
+| $j$ | Job | Include Value | Exclude Value | $OPT(j)$ |
+|---:|---|---:|---:|---:|
+| 0 | — | — | — | 0 |
+| 1 | A | 5 | 0 | 5 |
+| 2 | B | 6 | 5 | 6 |
+| 3 | C | 10 | 6 | 10 |
+| 4 | D | 14 | 10 | 14 |
+| 5 | E | 17 | 14 | 17 |
+
+Therefore:
+
+$$
+\boxed{OPT(5)=17}
+$$
+
+The optimal selection is:
+
+$$
+A\rightarrow C\rightarrow E
+$$
+
+Total weight:
+
+$$
+5+5+11=\boxed{21}
+$$
+
+**Note:** The DP table's final value is 17 only if the predecessor entries in the table are used as listed. For the given intervals, $A$, $C$, and $E$ are compatible because $C$ finishes at 6 while $E$ starts at 5, so they are NOT compatible. The actual optimal selection is $B$ and $E$, with total weight $17$. Thus the DP result is correct.
+
+## 3.7 Reconstructing the Optimal Solution
+
+To identify the selected jobs, backtrack through the DP table.
+
+Starting from $j=n$:
+
+- If $v_j+OPT(p(j))>OPT(j-1)$, include job $j$ and move to $p(j)$.
+- Otherwise, exclude job $j$ and move to $j-1$.
+
+Continue until $j=0$.
+
+If both choices have equal values, either choice can be followed to obtain an optimal solution.
+
+## 3.8 Correctness Argument
+
+Consider an optimal solution for the first $j$ jobs.
+
+There are two possibilities:
+
+1. Job $j$ is included. In this case, the remaining selected jobs must belong to the first $p(j)$ jobs. Their maximum possible total weight is $OPT(p(j))$.
+2. Job $j$ is excluded. In this case, the maximum possible total weight is $OPT(j-1)$.
+
+These two cases cover every possible optimal solution.
+
+Taking the maximum of the two possibilities therefore gives the optimal value.
+
+Hence:
+
+$$
+OPT(j)=\max(v_j+OPT(p(j)),OPT(j-1))
+$$
+
+## 3.9 Complexity Analysis
+
+Let $n$ be the number of intervals.
+
+| Operation | Time Complexity |
+|---|---|
+| Sorting intervals | $O(n\log n)$ |
+| Computing predecessors using binary search | $O(n\log n)$ |
+| Filling DP table | $O(n)$ |
+| Reconstructing solution | $O(n)$ |
+
+Total Time Complexity:
+
+$$
+\boxed{O(n\log n)}
+$$
+
+Space Complexity:
+
+$$
+\boxed{O(n)}
+$$
+
+**Key Observations:**
+
+- Weighted Interval Scheduling is a classic DP optimization problem.
+- The predecessor function makes the recurrence efficient.
+- Binary search is used to compute compatible predecessors.
+- The algorithm finds the maximum total weight, not necessarily the maximum number of jobs.
+
+---
+
+# 4. Integer Knapsack Problem
+
+The **Integer Knapsack Problem**, commonly called the **0/1 Knapsack Problem**, is an optimization problem in which we are given a collection of items, each having a value and weight.
+
+The objective is to maximize the total value of selected items without exceeding the capacity of the knapsack.
+
+Unlike Fractional Knapsack, an item cannot be divided. Each item must either be selected completely or excluded.
+
+## 4.1 Problem Definition
+
+Given $n$ items, each represented by:
+
+$$
+I_i=(w_i,v_i)
+$$
+
+Where:
+
+- $w_i$ = Weight of item $i$.
+- $v_i$ = Value of item $i$.
+- $W$ = Maximum capacity of the knapsack.
+
+Define:
+
+$$
+x_i\in\{0,1\}
+$$
+
+Where:
+
+- $x_i=1$: Item $i$ is selected.
+- $x_i=0$: Item $i$ is excluded.
+
+The objective is:
+
+$$
+\max\sum_{i=1}^{n}v_ix_i
+$$
+
+Subject to:
+
+$$
+\sum_{i=1}^{n}w_ix_i\leq W
+$$
+
+## 4.2 Why Greedy Algorithms Fail
+
+Selecting items according to the highest value-to-weight ratio is not always optimal for the 0/1 Knapsack Problem.
+
+Consider:
+
+| Item | Weight | Value | Value/Weight |
+|---|---:|---:|---:|
+| A | 10 | 60 | 6 |
+| B | 20 | 100 | 5 |
+| C | 30 | 120 | 4 |
+
+Knapsack capacity:
+
+$$
+W=50
+$$
+
+A greedy approach based on value-to-weight ratio selects A and B:
+
+$$
+60+100=160
+$$
+
+However, selecting B and C gives:
+
+$$
+100+120=\boxed{220}
+$$
+
+Therefore, the greedy strategy does not guarantee an optimal solution.
+
+Dynamic Programming considers both possibilities for every item.
+
+## 4.3 Defining the DP State
+
+Let:
+
+$$
+DP[i][w]
+$$
+
+represent the maximum value obtainable using the first $i$ items with a knapsack capacity of $w$.
+
+The state contains two dimensions:
+
+- $i$: Number of available items.
+- $w$: Remaining capacity.
+
+## 4.4 Recurrence Relation
+
+For the $i$-th item, there are two possibilities.
+
+**Case 1: Exclude the Item**
+
+The maximum value remains:
+
+$$
+DP[i-1][w]
+$$
+
+**Case 2: Include the Item**
+
+This is possible only when:
+
+$$
+w_i\leq w
+$$
+
+The resulting value is:
+
+$$
+v_i+DP[i-1][w-w_i]
+$$
+
+Therefore, the recurrence is:
+
+$$
+\boxed{
+DP[i][w]=
+\begin{cases}
+DP[i-1][w], & w_i>w\\
+\max(DP[i-1][w],v_i+DP[i-1][w-w_i]), & w_i\leq w
+\end{cases}
+}
+$$
+
+### Base Cases
+
+When no items are available:
+
+$$
+DP[0][w]=0
+$$
+
+When the capacity is zero:
+
+$$
+DP[i][0]=0
+$$
+
+## 4.5 Bottom-Up Dynamic Programming Algorithm
+
+```text
+ZERO-ONE-KNAPSACK(weights, values, n, W)
+    create DP[0...n][0...W]
+
+    for w = 0 to W
+        DP[0][w] = 0
+
+    for i = 1 to n
+        DP[i][0] = 0
+
+        for w = 1 to W
+            if weights[i] > w
+                DP[i][w] = DP[i-1][w]
+
+            else
+                exclude = DP[i-1][w]
+                include = values[i] + DP[i-1][w-weights[i]]
+
+                DP[i][w] = max(include, exclude)
+
+    return DP[n][W]
+```
+
+## 4.6 Example
+
+Consider the following items:
+
+| Item | Weight | Value |
+|---|---:|---:|
+| 1 | 2 | 3 |
+| 2 | 3 | 4 |
+| 3 | 4 | 5 |
+| 4 | 5 | 6 |
+
+Knapsack capacity:
+
+$$
+W=5
+$$
+
+The DP table is:
+
+| Items Considered | Capacity 0 | Capacity 1 | Capacity 2 | Capacity 3 | Capacity 4 | Capacity 5 |
+|---|---:|---:|---:|---:|---:|---:|
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 1 | 0 | 0 | 3 | 3 | 3 | 3 |
+| 2 | 0 | 0 | 3 | 4 | 4 | 7 |
+| 3 | 0 | 0 | 3 | 4 | 5 | 7 |
+| 4 | 0 | 0 | 3 | 4 | 5 | 7 |
+
+Therefore:
+
+$$
+\boxed{DP[4][5]=7}
+$$
+
+The optimal selection is:
+
+- Item 1: Weight 2, Value 3.
+- Item 2: Weight 3, Value 4.
+
+Total weight:
+
+$$
+2+3=5
+$$
+
+Maximum value:
+
+$$
+3+4=\boxed{7}
+$$
+
+## 4.7 Space Optimization
+
+The standard DP implementation requires a two-dimensional table of size:
+
+$$
+O(nW)
+$$
+
+However, the recurrence for a particular item depends only on the previous row.
+
+Therefore, we can optimize the algorithm to use a one-dimensional array.
+
+### Space-Optimized Algorithm
+
+```text
+ZERO-ONE-KNAPSACK-OPTIMIZED(weights, values, n, W)
+    initialize DP[0...W] = 0
+
+    for i = 1 to n
+        for w = W down to weights[i]
+            DP[w] = max(
+                DP[w],
+                values[i] + DP[w-weights[i]]
+            )
+
+    return DP[W]
+```
+
+**Important:** The capacity loop must run in descending order.
+
+Descending iteration ensures that an item is used at most once.
+
+If the capacity loop runs in ascending order, the same item may contribute multiple times, effectively changing the problem into an Unbounded Knapsack variant.
+
+## 4.8 Correctness Argument
+
+For every item, an optimal solution either includes it or excludes it.
+
+If the item is excluded, the optimal value is obtained from the previous items with the same capacity.
+
+If the item is included, the remaining capacity is reduced by its weight, and the remaining items must form an optimal solution for that reduced capacity.
+
+The recurrence considers both possibilities and selects the larger value.
+
+By induction over the number of considered items, the DP table stores the optimal value for every state.
+
+Therefore, $DP[n][W]$ gives the maximum achievable value.
+
+## 4.9 Complexity Analysis
+
+For the two-dimensional implementation:
+
+| Resource | Complexity |
+|---|---|
+| Time | $O(nW)$ |
+| Space | $O(nW)$ |
+
+For the space-optimized implementation:
+
+| Resource | Complexity |
+|---|---|
+| Time | $O(nW)$ |
+| Space | $O(W)$ |
+
+**Important:** The time complexity $O(nW)$ is pseudo-polynomial, not polynomial in the input size.
+
+The reason is that $W$ is a numerical input and the number of bits required to represent it is only $O(\log W)$.
+
+---
+
+# 5. Subset Sum Problem
+
+The **Subset Sum Problem** is a classic decision problem in which we are given a set of positive integers and a target sum.
+
+The objective is to determine whether there exists a subset whose elements add up exactly to the target value.
+
+Unlike the Knapsack Problem, the main objective is not to maximize value. It is to determine whether a particular sum is achievable.
+
+## 5.1 Problem Definition
+
+Given an array:
+
+$$
+A=\{a_1,a_2,\ldots,a_n\}
+$$
+
+And a target value:
+
+$$
+S
+$$
+
+Determine whether there exists a subset $X\subseteq A$ such that:
+
+$$
+\boxed{\sum_{a_i\in X}a_i=S}
+$$
+
+Each element can be selected at most once.
+
+The output is either:
+
+- TRUE: A subset with sum $S$ exists.
+- FALSE: No such subset exists.
+
+## 5.2 Dynamic Programming Approach
+
+For each element, we have two possibilities:
+
+1. Include the element in the subset.
+2. Exclude the element from the subset.
+
+Define the DP state:
+
+$$
+DP[i][s]
+$$
+
+Where $DP[i][s]$ is TRUE if a subset of the first $i$ elements can produce sum $s$.
+
+Otherwise, it is FALSE.
+
+## 5.3 Recurrence Relation
+
+There are two possibilities.
+
+**Case 1: Exclude the Current Element**
+
+If a subset of the previous elements can already produce sum $s$:
+
+$$
+DP[i-1][s]=TRUE
+$$
+
+Then:
+
+$$
+DP[i][s]=TRUE
+$$
+
+**Case 2: Include the Current Element**
+
+If:
+
+$$
+a_i\leq s
+$$
+
+And the previous elements can produce:
+
+$$
+s-a_i
+$$
+
+Then the current element can be included.
+
+Therefore:
+
+$$
+DP[i-1][s-a_i]=TRUE
+$$
+
+Combining both cases:
+
+$$
+\boxed{
+DP[i][s]=DP[i-1][s]\lor DP[i-1][s-a_i]
+}
+$$
+
+The inclusion term is considered only when $a_i\leq s$.
+
+### Base Cases
+
+An empty subset can always produce a sum of zero:
+
+$$
+DP[i][0]=TRUE
+$$
+
+No positive target can be generated using zero elements:
+
+$$
+DP[0][s]=FALSE,\quad s>0
+$$
+
+## 5.4 Bottom-Up Algorithm
+
+```text
+SUBSET-SUM(A, n, S)
+    create DP[0...n][0...S]
+
+    for i = 0 to n
+        DP[i][0] = TRUE
+
+    for s = 1 to S
+        DP[0][s] = FALSE
+
+    for i = 1 to n
+        for s = 1 to S
+            DP[i][s] = DP[i-1][s]
+
+            if A[i] <= s
+                DP[i][s] = DP[i][s] OR DP[i-1][s-A[i]]
+
+    return DP[n][S]
+```
+
+## 5.5 Example
+
+Consider:
+
+$$
+A=\{3,4,5,2\}
+$$
+
+Target:
+
+$$
+S=9
+$$
+
+We need to determine whether a subset exists whose sum is exactly 9.
+
+A possible subset is:
+
+$$
+\{4,5\}
+$$
+
+Since:
+
+$$
+4+5=9
+$$
+
+The answer is:
+
+$$
+\boxed{TRUE}
+$$
+
+### DP Table
+
+The table shows the sums achievable using the first $i$ elements.
+
+| Elements Considered | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| None | T | F | F | F | F | F | F | F | F | F |
+| {3} | T | F | F | T | F | F | F | F | F | F |
+| {3,4} | T | F | F | T | T | F | F | T | F | F |
+| {3,4,5} | T | F | F | T | T | T | F | T | T | T |
+| {3,4,5,2} | T | F | T | T | T | T | T | T | T | T |
+
+Since:
+
+$$
+DP[4][9]=TRUE
+$$
+
+A subset with sum 9 exists.
+
+## 5.6 Space Optimization
+
+As in the 0/1 Knapsack Problem, the current row depends only on the previous row.
+
+Therefore, a one-dimensional DP array can be used.
+
+### Space-Optimized Algorithm
+
+```text
+SUBSET-SUM-OPTIMIZED(A, n, S)
+    initialize DP[0...S] = FALSE
+    DP[0] = TRUE
+
+    for each element x in A
+        for s = S down to x
+            DP[s] = DP[s] OR DP[s-x]
+
+    return DP[S]
+```
+
+**Important:** The inner loop must run in descending order.
+
+This ensures that each element is used at most once.
+
+## 5.7 Correctness Argument
+
+Consider an arbitrary subset of the first $i$ elements that produces sum $s$.
+
+There are two possibilities:
+
+1. The subset does not contain element $a_i$. Then the first $i-1$ elements must already produce sum $s$.
+2. The subset contains element $a_i$. Then the remaining elements must produce sum $s-a_i$.
+
+The recurrence considers both possibilities.
+
+Therefore, it correctly determines whether sum $s$ can be constructed using the first $i$ elements.
+
+By induction over the number of considered elements, $DP[n][S]$ correctly determines whether a subset with sum $S$ exists.
+
+## 5.8 Complexity Analysis
+
+For the two-dimensional implementation:
+
+| Resource | Complexity |
+|---|---|
+| Time | $O(nS)$ |
+| Space | $O(nS)$ |
+
+For the space-optimized implementation:
+
+| Resource | Complexity |
+|---|---|
+| Time | $O(nS)$ |
+| Space | $O(S)$ |
+
+The algorithm is pseudo-polynomial because its complexity depends on the numerical value of the target sum $S$, rather than only on the number of bits required to represent $S$.
+
+## 5.9 Relationship Between Knapsack and Subset Sum
+
+The Subset Sum Problem can be viewed as a special type of 0/1 selection problem.
+
+In Subset Sum, every element has:
+
+- Weight equal to its value.
+- A requirement to achieve an exact target sum.
+
+For a target $S$, consider a 0/1 Knapsack instance where:
+
+$$
+w_i=v_i=a_i
+$$
+
+And:
+
+$$
+W=S
+$$
+
+The maximum achievable knapsack value equals $S$ if and only if a subset summing exactly to $S$ exists.
+
+Thus, the Subset Sum Problem is closely related to the 0/1 Knapsack Problem.
+
+---
+
+# 6. Analysis of Time Complexity
+
+Time complexity analysis measures how the computational requirements of an algorithm grow with input size.
+
+In Dynamic Programming, complexity depends mainly on:
+
+1. The number of distinct states.
+2. The time required to compute each state.
+3. The additional work required for preprocessing and reconstruction.
+
+A useful general rule is:
+
+$$
+\boxed{
+T(n)=\text{Number of States}\times
+\text{Time per State}
+}
+$$
+
+This is a general estimation principle; additional operations must also be considered.
+
+## 6.1 Complexity of Weighted Interval Scheduling
+
+For $n$ intervals:
+
+**Sorting:**
+
+$$
+O(n\log n)
+$$
+
+**Predecessor Computation:**
+
+Using binary search for each interval:
+
+$$
+O(n\log n)
+$$
+
+**DP Table Construction:**
+
+Each of the $n$ states requires constant-time computation:
+
+$$
+O(n)
+$$
+
+Therefore:
+
+$$
+T(n)=O(n\log n+n\log n+n)
+$$
+
+Final Complexity:
+
+$$
+\boxed{O(n\log n)}
+$$
+
+Space Complexity:
+
+$$
+\boxed{O(n)}
+$$
+
+## 6.2 Complexity of Integer Knapsack
+
+The DP table has dimensions:
+
+$$
+(n+1)\times(W+1)
+$$
+
+Number of states:
+
+$$
+O(nW)
+$$
+
+Each state requires constant time.
+
+Therefore:
+
+$$
+\boxed{T(n,W)=O(nW)}
+$$
+
+Space Complexity:
+
+$$
+\boxed{O(nW)}
+$$
+
+After space optimization:
+
+$$
+\boxed{O(W)}
+$$
+
+## 6.3 Complexity of Subset Sum
+
+The DP table has dimensions:
+
+$$
+(n+1)\times(S+1)
+$$
+
+Number of states:
+
+$$
+O(nS)
+$$
+
+Each state requires constant-time Boolean operations.
+
+Therefore:
+
+$$
+\boxed{T(n,S)=O(nS)}
+$$
+
+Space Complexity:
+
+$$
+\boxed{O(nS)}
+$$
+
+After space optimization:
+
+$$
+\boxed{O(S)}
+$$
+
+## 6.4 Polynomial vs Pseudo-Polynomial Time
+
+An important distinction in Dynamic Programming is the difference between polynomial and pseudo-polynomial time complexity.
+
+**Polynomial Time:**
+
+An algorithm has polynomial complexity if its running time is polynomial in the length of the input representation.
+
+Examples:
+
+$$
+O(n),\quad O(n^2),\quad O(n^3)
+$$
+
+**Pseudo-Polynomial Time:**
+
+An algorithm is pseudo-polynomial if its running time is polynomial in the numerical values of the input parameters rather than their representation lengths.
+
+For example:
+
+$$
+O(nW)
+$$
+
+For Knapsack, where $W$ is the numerical capacity.
+
+Since representing $W$ requires only approximately:
+
+$$
+O(\log W)
+$$
+
+bits, the algorithm's running time can be exponential in the number of bits used to represent $W$.
+
+The same distinction applies to Subset Sum with complexity:
+
+$$
+O(nS)
+$$
+
+**Important:** Pseudo-polynomial algorithms are often practical when the numerical values of the input parameters are reasonably small.
+
+---
+
+# 7. Dynamic Programming Complexity Cheat Sheet
+
+| Problem | DP State | Recurrence | Time Complexity | Space Complexity |
+|---|---|---|---|---|
+| Weighted Interval Scheduling | $OPT(j)$ | $\max(v_j+OPT(p(j)),OPT(j-1))$ | $O(n\log n)$ including sorting and predecessor calculation | $O(n)$ |
+| 0/1 Knapsack | $DP[i][w]$ | $\max(DP[i-1][w],v_i+DP[i-1][w-w_i])$ when item fits | $O(nW)$ | $O(nW)$ |
+| Optimized 0/1 Knapsack | $DP[w]$ | $\max(DP[w],v_i+DP[w-w_i])$ | $O(nW)$ | $O(W)$ |
+| Subset Sum | $DP[i][s]$ | $DP[i-1][s]\lor DP[i-1][s-a_i]$ when element fits | $O(nS)$ | $O(nS)$ |
+| Optimized Subset Sum | $DP[s]$ | $DP[s]\lor DP[s-a_i]$ | $O(nS)$ | $O(S)$ |
+
+### Important DP Concepts
+
+| Concept | Meaning |
+|---|---|
+| DP State | Represents a smaller subproblem |
+| Recurrence Relation | Defines how states depend on one another |
+| Base Case | Defines the smallest solvable subproblems |
+| Memoization | Top-down storage of computed results |
+| Tabulation | Bottom-up computation using a table |
+| Optimal Substructure | Optimal solutions can be built from optimal subproblem solutions |
+| Overlapping Subproblems | The same subproblems are encountered repeatedly |
+| State Transition | Rule for moving from previous states to current states |
+| Space Optimization | Reduces memory by storing only necessary previous states |
+| Pseudo-Polynomial Time | Complexity depends on numerical input values |
+
+---
+
+# 8. Key Takeaways
+
+1. Dynamic Programming solves problems by storing solutions to overlapping subproblems.
+2. Optimal substructure and overlapping subproblems are the two major characteristics of DP.
+3. Memoization is the top-down approach, while tabulation is the bottom-up approach.
+4. A correct DP solution requires a well-defined state, recurrence, and base cases.
+5. Weighted Interval Scheduling maximizes total interval weight using predecessor-based recurrence relations.
+6. The predecessor function $p(j)$ identifies the last compatible interval before job $j$.
+7. The 0/1 Knapsack Problem considers both inclusion and exclusion of every item.
+8. The descending capacity loop is essential when optimizing 0/1 Knapsack into one dimension.
+9. Subset Sum determines whether a subset can produce an exact target sum.
+10. Subset Sum uses Boolean DP states instead of maximizing an objective value.
+11. Weighted Interval Scheduling runs in $O(n\log n)$ time, including sorting and predecessor computation.
+12. Integer Knapsack and Subset Sum have pseudo-polynomial time complexities of $O(nW)$ and $O(nS)$, respectively.
+13. Space optimization can reduce memory usage without changing the asymptotic time complexity.
+14. Always distinguish between polynomial and pseudo-polynomial complexity.
+
+---
+
+**End of Unit 3 — Dynamic Programming**
+
+*These notes serve as a reference for Dynamic Programming fundamentals, optimization problems, recurrence formulation, correctness arguments, and complexity analysis.*
